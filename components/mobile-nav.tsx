@@ -5,9 +5,9 @@ import { useState } from "react"
 const NAV_LINKS = [
   { label: "Tentang",     href: "#about" },
   { label: "Skills",      href: "#skills" },
+  { label: "Projects",    href: "#projects" },
   { label: "Pengalaman",  href: "#experience" },
   { label: "Pendidikan",  href: "#education" },
-  { label: "Kontak",      href: "#contact" },
 ]
 
 const NAV_STYLE = {

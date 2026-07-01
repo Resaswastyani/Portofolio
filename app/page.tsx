@@ -426,6 +426,100 @@ export default function PortfolioPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
+          PROJECT GALLERY — grid cards
+          ══════════════════════════════════════════════════════════════════════ */}
+      <section id="projects" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
+            <div>
+              <PixelIcon type="integrations" size={40} />
+              <div className="mt-4"><Tag>PROJECT GALLERY</Tag></div>
+              <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+                {"Karya & inovasi\nyang telah dirilis."}
+              </RevealText>
+            </div>
+            <p className="text-sm text-black/45 leading-relaxed max-w-xs">
+              Beberapa proyek pilihan dari berbagai industri, mulai dari sistem e-commerce hingga penelitian machine learning.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" onMouseMove={handleMouse}>
+            {[
+              {
+                title: "Marketplace System",
+                category: "E-Commerce",
+                tech: "Laravel 12, Next.js",
+                desc: "Sistem marketplace komprehensif dengan arsitektur modern.",
+                link: "#", // Ganti dengan link dari CV
+                delay: 0,
+              },
+              {
+                title: "Water Metering & Billing",
+                category: "Utility",
+                tech: "Next.js, WA API",
+                desc: "Pencatatan meteran air dengan pengiriman tagihan otomatis via WhatsApp.",
+                link: "#", // Ganti dengan link dari CV
+                delay: 80,
+              },
+              {
+                title: "Property Management",
+                category: "Real Estate",
+                tech: "Laravel, PHP",
+                desc: "Sistem manajemen perumahan dan integrasi gateway pembayaran.",
+                link: "#", // Ganti dengan link dari CV
+                delay: 160,
+              },
+              {
+                title: "Student Graduation Prediction",
+                category: "Machine Learning",
+                tech: "Python, Scikit-learn",
+                desc: "Prediksi kelulusan menggunakan algoritma KNN & Decision Tree.",
+                link: "#", // Ganti dengan link dari CV
+                delay: 240,
+              },
+              {
+                title: "Car Rental Platform",
+                category: "Web App",
+                tech: "PHP, Bootstrap",
+                desc: "Platform pemesanan dan manajemen armada penyewaan mobil.",
+                link: "#", // Ganti dengan link dari CV
+                delay: 320,
+              },
+              {
+                title: "Smart Egg Incubator",
+                category: "IoT",
+                tech: "Raspberry Pi",
+                desc: "Inkubator telur otomatis berbasis IoT untuk pemantauan suhu real-time.",
+                link: "#", // Ganti dengan link dari CV
+                delay: 400,
+              },
+            ].map((project, i) => (
+              <BentoCard key={i} className="flex flex-col group" delay={project.delay}>
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="flex justify-between items-start mb-4">
+                    <Tag>{project.category}</Tag>
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded-full bg-black/[0.04] flex items-center justify-center text-black/40 hover:bg-black/[0.08] hover:text-black transition-colors"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                  </div>
+                  <h3 className="text-xl font-light mb-2">{project.title}</h3>
+                  <p className="text-sm text-black/45 leading-relaxed mb-6 flex-1">{project.desc}</p>
+                  <div className="pt-4 border-t border-black/[0.06]">
+                    <span className="text-xs text-black/40 tracking-wide">{project.tech}</span>
+                  </div>
+                </div>
+              </BentoCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
           PROFESSIONAL EXPERIENCE — stacked cards
           ══════════════════════════════════════════════════════════════════════ */}
       <section id="experience" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06]">
@@ -715,6 +809,7 @@ export default function PortfolioPage() {
             {[
               { label: "Tentang", href: "#about" },
               { label: "Skills", href: "#skills" },
+              { label: "Projects", href: "#projects" },
               { label: "Pengalaman", href: "#experience" },
               { label: "Pendidikan", href: "#education" },
               { label: "Kontak", href: "#contact" },
