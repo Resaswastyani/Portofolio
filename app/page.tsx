@@ -368,8 +368,24 @@ function LocalVideoEmbed({ src, title, desc, delay = 0, isLive = false }: { src:
 }
 
 
-// ─── Forex Website Iframe Embed ───────────────────────────────────────────────
-function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
+// ─── Live Website Iframe Embed ───────────────────────────────────────────────
+function LiveWebsiteEmbed({
+  url,
+  displayUrl,
+  title,
+  desc,
+  accentColor = "#167E6C",
+  logoText = "WEB",
+  delay = 0,
+}: {
+  url: string;
+  displayUrl: string;
+  title: string;
+  desc: string;
+  accentColor?: string;
+  logoText?: string;
+  delay?: number;
+}) {
   const { ref: inRef, inView } = useInView(0.1)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [loaded, setLoaded] = useState(false)
@@ -412,11 +428,11 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
             <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
           </div>
           <div className="flex-1 h-5 bg-black/[0.05] dark:bg-white/[0.05] rounded-full flex items-center px-3 gap-1.5 min-w-0">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#167E6C" strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">forexforbetterliving.com</span>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">{displayUrl}</span>
           </div>
           <a
-            href="https://www.forexforbetterliving.com/"
+            href={url}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 w-6 h-6 flex items-center justify-center text-black/30 dark:text-white/30 hover:text-black dark:hover:text-white transition-colors"
@@ -434,8 +450,8 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
         <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white">
           <iframe
             ref={iframeRef}
-            src="https://www.forexforbetterliving.com/"
-            title="Forex For Better Living"
+            src={url}
+            title={title}
             onLoad={() => setLoaded(true)}
             scrolling="no"
             style={{
@@ -457,8 +473,8 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
           {/* LIVE badge */}
           <div className="absolute bottom-2 right-2 z-10">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-medium text-white tracking-wide"
-              style={{ background: "#167E6C" }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22d3a8] animate-pulse shrink-0" />
+              style={{ background: accentColor }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse shrink-0" />
               LIVE WEBSITE
             </div>
           </div>
@@ -467,8 +483,8 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
           {!loaded && (
             <div className="absolute inset-0 bg-white flex items-center justify-center z-0">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#111A4A] flex items-center justify-center">
-                  <span className="text-[10px] font-black text-[#22d3a8]">FBL</span>
+                <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center">
+                  <span className="text-[10px] font-black" style={{ color: accentColor }}>{logoText}</span>
                 </div>
                 <div className="text-[10px] text-black/30 animate-pulse">Memuat website...</div>
               </div>
@@ -479,11 +495,11 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
         {/* Footer info */}
         <div className="px-5 py-3.5 border-t border-black/[0.05] dark:border-white/[0.05] shrink-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-light text-black/70 dark:text-white/70">Forex For Better Living</h3>
-            <span className="px-1.5 py-0.5 rounded text-[9px] bg-[#167E6C]/10 text-[#167E6C]">Live</span>
+            <h3 className="text-sm font-light text-black/70 dark:text-white/70">{title}</h3>
+            <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${accentColor}15`, color: accentColor }}>Live</span>
           </div>
           <p className="text-xs text-black/40 dark:text-white/40 mt-1 leading-relaxed">
-            Platform Edukasi & Konsultasi Forex Trading — Next.js, Robot Trading (EA), Indikator Canggih.
+            {desc}
           </p>
         </div>
       </div>
@@ -805,15 +821,23 @@ export default function PortfolioPage() {
               title="Maharani Transport App"
               desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
             />
-            <ForexWebsiteEmbed delay={160} />
-            {/* — TANPA MEDIA — */}
-            <ProjectCard
-              title="Marketplace System"
-              category="E-Commerce"
-              tech="Laravel 12, Next.js"
-              desc="Sistem marketplace komprehensif dengan arsitektur modern, multi-vendor, dan dashboard admin real-time."
-              link="#"
-              delay={160}
+            <LiveWebsiteEmbed 
+              url="https://www.forexforbetterliving.com/"
+              displayUrl="forexforbetterliving.com"
+              title="Forex For Better Living"
+              desc="Platform Edukasi & Konsultasi Forex Trading — Next.js, Robot Trading (EA), Indikator Canggih."
+              accentColor="#167E6C"
+              logoText="FBL"
+              delay={160} 
+            />
+            <LiveWebsiteEmbed 
+              url="https://absensielrahma.vercel.app/"
+              displayUrl="absensielrahma.vercel.app"
+              title="Sistem Absensi El Rahma"
+              desc="Platform absensi online modern dengan fitur real-time dan rekap otomatis."
+              accentColor="#0ea5e9"
+              logoText="ABSEN"
+              delay={240} 
             />
             <ProjectCard
               title="Water Metering & Billing"
