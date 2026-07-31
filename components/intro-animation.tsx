@@ -2,20 +2,20 @@
 
 import { useEffect, useState } from "react"
 
-const LETTERS = ["R", "E", "S", "A"]
+const ITEMS = ["Portofolio", "Resa", "Swastyani"]
 
-const LETTER_IN_STAGGER  = 90    // ms between each letter appearing
-const LETTER_IN_DUR      = 700   // duration of each letter appear transition
-const HOLD_DURATION      = 300   // hold fully visible before exit
-const LETTERS_IN_TOTAL   = LETTER_IN_STAGGER * (LETTERS.length - 1) + LETTER_IN_DUR + HOLD_DURATION
+const ITEM_IN_STAGGER  = 150   // ms between each item appearing
+const ITEM_IN_DUR      = 700   // duration of each item appear transition
+const HOLD_DURATION    = 400   // hold fully visible before exit
+const ITEMS_IN_TOTAL   = ITEM_IN_STAGGER * (ITEMS.length - 1) + ITEM_IN_DUR + HOLD_DURATION
 
-const LETTER_OUT_STAGGER = 55    // ms between each letter disappearing
-const LETTER_OUT_DUR     = 450   // duration of each letter fade out
-const LETTERS_OUT_TOTAL  = LETTER_OUT_STAGGER * (LETTERS.length - 1) + LETTER_OUT_DUR
+const ITEM_OUT_STAGGER = 100   // ms between each item disappearing
+const ITEM_OUT_DUR     = 450   // duration of each item fade out
+const ITEMS_OUT_TOTAL  = ITEM_OUT_STAGGER * (ITEMS.length - 1) + ITEM_OUT_DUR
 
-const CURTAIN_DELAY      = LETTERS_IN_TOTAL + 100
+const CURTAIN_DELAY      = ITEMS_IN_TOTAL + 100
 const CURTAIN_DURATION   = 1300  // matches the CSS transition on the curtain div
-const ANIM_TOTAL         = CURTAIN_DELAY + LETTERS_OUT_TOTAL + 1400
+const ANIM_TOTAL         = CURTAIN_DELAY + ITEMS_OUT_TOTAL + 1400
 
 // Exported: moment the curtain finishes retracting — when the bg is fully visible
 export const INTRO_DURATION_MS = CURTAIN_DELAY + CURTAIN_DURATION
@@ -31,7 +31,7 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     // Tiny delay so the browser has painted before we start transitioning
     const t0 = setTimeout(() => setPhase("in"), 80)
-    const t1 = setTimeout(() => setPhase("out"), LETTERS_IN_TOTAL)
+    const t1 = setTimeout(() => setPhase("out"), ITEMS_IN_TOTAL)
     const t2 = setTimeout(() => setCurtainUp(true), CURTAIN_DELAY)
     const t3 = setTimeout(() => onDone(), HERO_REVEAL_MS)
     const t4 = setTimeout(() => setPhase("done"), ANIM_TOTAL)
@@ -54,12 +54,12 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
         }}
       />
 
-      {/* AGENTIC letters */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex" style={{ gap: "0.06em" }}>
-          {LETTERS.map((letter, i) => {
-            const inDelay  = i * LETTER_IN_STAGGER
-            const outDelay = i * LETTER_OUT_STAGGER
+      {/* Intro text */}
+      <div className="absolute inset-0 flex items-center justify-center p-6">
+        <div className="flex flex-wrap justify-center items-center" style={{ gap: "0.3em" }}>
+          {ITEMS.map((item, i) => {
+            const inDelay  = i * ITEM_IN_STAGGER
+            const outDelay = i * ITEM_OUT_STAGGER
 
             // idle → invisible starting position
             const isIdle = phase === "idle"
@@ -67,26 +67,26 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
             const isOut  = phase === "out"
 
             const opacity    = isIdle ? 0 : isIn ? 1 : 0
-            const blur       = isIdle ? 36 : isIn ? 0 : 24
-            const translateY = isIdle ? 48 : isIn ? 0 : -20
+            const blur       = isIdle ? 24 : isIn ? 0 : 16
+            const translateY = isIdle ? 32 : isIn ? 0 : -16
 
             const transition = isOut
-              ? `opacity ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
-                 filter  ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
-                 transform ${LETTER_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms`
+              ? `opacity ${ITEM_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
+                 filter  ${ITEM_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms,
+                 transform ${ITEM_OUT_DUR}ms cubic-bezier(0.4,0,1,1) ${outDelay}ms`
               : isIn
-              ? `opacity ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
-                 filter  ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
-                 transform ${LETTER_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms`
+              ? `opacity ${ITEM_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
+                 filter  ${ITEM_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms,
+                 transform ${ITEM_IN_DUR}ms cubic-bezier(0.16,1,0.3,1) ${inDelay}ms`
               : "none"
 
             return (
               <span
                 key={i}
-                className="font-sans font-bold text-[#111] leading-none select-none"
+                className="font-sans font-bold text-[#111] leading-none select-none text-center"
                 style={{
-                  fontSize: `calc((100vw - 64px) / ${LETTERS.length})`,
-                  letterSpacing: "0.05em",
+                  fontSize: `clamp(2rem, 7vw, 5rem)`,
+                  letterSpacing: "-0.02em",
                   opacity,
                   filter: `blur(${blur}px)`,
                   transform: `translateY(${translateY}px)`,
@@ -94,7 +94,7 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
                   willChange: "opacity, filter, transform",
                 }}
               >
-                {letter}
+                {item}
               </span>
             )
           })}

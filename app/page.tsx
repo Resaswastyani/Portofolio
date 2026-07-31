@@ -284,10 +284,9 @@ function ProjectCard({
   )
 }
 
-// ─── Canva Video Embed ─────────────────────────────────────────────────────────
-function CanvaEmbed({ designId, shortId, title, desc }: { designId: string; shortId: string; title: string; desc: string }) {
+// ─── Local Video Embed ─────────────────────────────────────────────────────────
+function LocalVideoEmbed({ src, title, desc }: { src: string; title: string; desc: string }) {
   const { ref, inView } = useInView(0.1)
-  const [loaded, setLoaded] = React.useState(false)
 
   return (
     <div ref={ref} className="rounded-2xl border border-black/[0.08] bg-white overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
@@ -299,42 +298,20 @@ function CanvaEmbed({ designId, shortId, title, desc }: { designId: string; shor
           <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
         </div>
         <div className="flex-1 h-5 bg-black/[0.05] rounded-full flex items-center px-3">
-          <span className="text-[10px] text-black/30 tracking-wide truncate">canva.com · {title}</span>
+          <span className="text-[10px] text-black/30 tracking-wide truncate">{title}</span>
         </div>
-        <a href={`https://canva.link/${shortId}`} target="_blank" rel="noopener noreferrer">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-black/30 hover:text-black/60 transition-colors"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-        </a>
       </div>
 
-      {/* Canva iframe embed — lazy loaded */}
-      <div className="relative flex-1" style={{ minHeight: "260px" }}>
-        {/* Loading skeleton */}
-        {!loaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#fafaf8]">
-            <div className="w-12 h-12 rounded-xl bg-[#00C4CC]/10 flex items-center justify-center">
-              {/* Canva logo-ish */}
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#00C4CC]">
-                <rect width="24" height="24" rx="6" fill="currentColor" fillOpacity="0.15" />
-                <path d="M12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18C15.3137 18 18 15.3137 18 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="12" cy="12" r="2" fill="currentColor" />
-              </svg>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-black/40 font-light">Memuat presentasi Canva...</p>
-              <p className="text-xs text-black/25 mt-1">{title}</p>
-            </div>
-          </div>
-        )}
+      {/* Local Video Player */}
+      <div className="relative flex-1 bg-black/5 flex items-center justify-center overflow-hidden" style={{ minHeight: "260px" }}>
         {inView && (
-          <iframe
-            loading="lazy"
-            onLoad={() => setLoaded(true)}
-            className="absolute inset-0 w-full h-full"
-            style={{ border: "none" }}
-            src={`https://www.canva.com/design/${designId}/view?embed`}
-            allow="fullscreen"
-            allowFullScreen
-            title={title}
+          <video
+            controls
+            autoPlay
+            muted
+            loop
+            className="w-full h-full object-cover"
+            src={src}
           />
         )}
       </div>
@@ -346,15 +323,6 @@ function CanvaEmbed({ designId, shortId, title, desc }: { designId: string; shor
             <h3 className="text-sm font-light text-black/70">{title}</h3>
             <p className="text-xs text-black/40 mt-1 leading-relaxed">{desc}</p>
           </div>
-          <a
-            href={`https://canva.link/${shortId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00C4CC]/10 hover:bg-[#00C4CC]/20 transition-colors text-xs text-[#00C4CC] font-medium"
-          >
-            Lihat di Canva
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-          </a>
         </div>
       </div>
     </div>
@@ -640,17 +608,16 @@ export default function PortfolioPage() {
                 delay={0}
               />
 
-              {/* Canva Portfolio — video embed */}
+              {/* Project Video — Local Video Embed */}
               <div style={{
                 opacity: 1,
                 transform: "translateY(0)",
                 transition: "opacity 0.7s ease 80ms, transform 0.7s ease 80ms",
               }}>
-                <CanvaEmbed
-                  designId="DAGplywe5v4m5a5ng"
-                  shortId="gplywe5v4m5a5ng"
+                <LocalVideoEmbed
+                  src="/video/Rupakata.mp4"
                   title="Portfolio & Project Presentation"
-                  desc="Desain visual & presentasi profesional yang mencakup proyek kampus, materi pelatihan AI untuk guru, dan konten branding — dibuat dengan Canva."
+                  desc="Desain visual & presentasi profesional yang mencakup proyek kampus, materi pelatihan AI untuk guru, dan konten branding."
                 />
               </div>
 
