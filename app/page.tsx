@@ -371,6 +371,8 @@ function LocalVideoEmbed({ src, title, desc, delay = 0, isLive = false }: { src:
 // ─── Live Website Iframe Embed ───────────────────────────────────────────────
 function LiveWebsiteEmbed({
   url,
+  image,
+  images,
   displayUrl,
   title,
   desc,
@@ -378,7 +380,9 @@ function LiveWebsiteEmbed({
   logoText = "WEB",
   delay = 0,
 }: {
-  url: string;
+  url?: string;
+  image?: string;
+  images?: string[];
   displayUrl: string;
   title: string;
   desc: string;
@@ -432,7 +436,7 @@ function LiveWebsiteEmbed({
             <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">{displayUrl}</span>
           </div>
           <a
-            href={url}
+            href={url || image || (images && images[0]) || "#"}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 w-6 h-6 flex items-center justify-center text-black/30 dark:text-white/30 hover:text-black dark:hover:text-white transition-colors"
@@ -447,28 +451,70 @@ function LiveWebsiteEmbed({
         </div>
 
         {/* Iframe container — scaled to fit */}
-        <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white">
-          <iframe
-            ref={iframeRef}
-            src={url}
-            title={title}
-            onLoad={() => setLoaded(true)}
-            scrolling="no"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "400%",
-              height: "800px",
-              border: "none",
-              transformOrigin: "top left",
-              transform: "scale(0.25)",
-              pointerEvents: "none",
-              display: "block",
-              opacity: loaded && inView ? 1 : 0,
-              transition: "opacity 0.7s ease",
-            }}
-          />
+        <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white group">
+          {images && images.length > 0 ? (
+            <>
+              <div 
+                className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+                style={{
+                  opacity: inView ? 1 : 0,
+                  transition: "opacity 0.7s ease",
+                  scrollBehavior: "smooth"
+                }}
+              >
+                {images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`${title} - slide ${i+1}`}
+                    onLoad={() => setLoaded(true)}
+                    className="w-full h-full shrink-0 object-cover object-top snap-center"
+                  />
+                ))}
+              </div>
+              {/* Optional scroll hint */}
+              {images.length > 1 && (
+                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-black/20 backdrop-blur flex items-center justify-center text-white/70">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : image ? (
+            <img
+              src={image}
+              alt={title}
+              onLoad={() => setLoaded(true)}
+              className="absolute inset-0 w-full h-full object-cover object-top"
+              style={{
+                opacity: loaded && inView ? 1 : 0,
+                transition: "opacity 0.7s ease",
+              }}
+            />
+          ) : url ? (
+            <iframe
+              ref={iframeRef}
+              src={url}
+              title={title}
+              onLoad={() => setLoaded(true)}
+              scrolling="no"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "400%",
+                height: "800px",
+                border: "none",
+                transformOrigin: "top left",
+                transform: "scale(0.25)",
+                pointerEvents: "none",
+                display: "block",
+                opacity: loaded && inView ? 1 : 0,
+                transition: "opacity 0.7s ease",
+              }}
+            />
+          ) : null}
 
           {/* LIVE badge */}
           <div className="absolute bottom-2 right-2 z-10">
@@ -793,16 +839,6 @@ export default function PortfolioPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* — DENGAN MEDIA (GAMBAR / VIDEO) DULU — */}
             <ProjectCard
-              title="Maharani Transport — Car Rental Platform"
-              category="Web App · Full Stack"
-              tech="PHP, Bootstrap, MySQL"
-              desc="Website penyewaan mobil yang live beroperasi. Dilengkapi katalog kendaraan, WooCommerce, dan pemesanan langsung via WhatsApp. Dibangun sebagai Full Stack Developer saat internship Feb–Mar 2023."
-              link="https://maharanitransport.com"
-              image="/images/maharani-web-preview.png"
-              accent="#1e3a5f"
-              delay={0}
-            />
-            <ProjectCard
               title="AI Training Materials"
               category="AI · Education"
               tech="AI Tools, Workshop"
@@ -839,21 +875,30 @@ export default function PortfolioPage() {
               logoText="ABSEN"
               delay={240} 
             />
-            <ProjectCard
+            <LiveWebsiteEmbed 
+              url="https://tirtabening.sevensmarts-dev.com/"
+              images={[
+                "/images/water1.png",
+                "/images/water2.png",
+                "/images/water3.png",
+                "/images/water4.png",
+                "/images/water5.png"
+              ]}
+              displayUrl="tirtabening.sevensmarts-dev.com"
               title="Water Metering & Billing"
-              category="Utility"
-              tech="Next.js, WA API"
               desc="Pencatatan meteran air dengan pengiriman tagihan otomatis dan notifikasi pengingat via WhatsApp API."
-              link="#"
-              delay={240}
+              accentColor="#0ea5e9"
+              logoText="AIR"
+              delay={240} 
             />
-            <ProjectCard
+            <LiveWebsiteEmbed 
+              url="https://derail-flashcard-answering.ngrok-free.dev/"
+              displayUrl="derail-flashcard-answering.ngrok-free.dev"
               title="Student Graduation Prediction"
-              category="Machine Learning"
-              tech="Python, Scikit-learn"
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
-              link="#"
-              delay={400}
+              accentColor="#ff4b4b"
+              logoText="PRED"
+              delay={320} 
             />
           </div>
         </div>
@@ -876,16 +921,26 @@ export default function PortfolioPage() {
             {[
               {
                 no: "01",
-                role: "Leader Programmer",
-                company: "CV Seven Smart Indonesia",
-                period: "Juli 2025 – Sekarang",
+                role: "Fullstack Developer",
+                company: "PT Akademi Keuangan Nusantara",
+                period: "Desember 2025 – Sekarang",
                 type: "Full-time",
-                desc: "Memimpin dan mengoordinasikan tim developer dalam pengembangan aplikasi marketplace dan berbagai produk digital dengan arsitektur modern. Bertanggung jawab atas pengembangan backend menggunakan Laravel 12 dan frontend dengan Next.js.",
-                stack: ["Laravel 12", "Next.js", "MySQL"],
+                desc: "Sebagai Fullstack Developer, saya bertanggung jawab mengembangkan aplikasi pembelajaran atau e-learning mengenai keuangan. Saya menggunakan Next.js sebagai bahasa pemrograman utama untuk membangun antarmuka dan logika backend yang efisien.",
+                stack: ["Next.js", "React", "Node.js"],
                 delay: 0,
               },
               {
                 no: "02",
+                role: "Leader Programmer",
+                company: "CV Seven Smart Indonesia",
+                period: "Juli 2025 – November 2025",
+                type: "Full-time",
+                desc: "Memimpin dan mengoordinasikan tim developer dalam pengembangan aplikasi marketplace dan berbagai produk digital dengan arsitektur modern. Bertanggung jawab atas pengembangan backend menggunakan Laravel 12 dan frontend dengan Next.js.",
+                stack: ["Laravel 12", "Next.js", "MySQL"],
+                delay: 40,
+              },
+              {
+                no: "03",
                 role: "Fullstack Developer",
                 company: "PT Agile Sapta Cahaya",
                 period: "Agustus – Oktober 2025",
@@ -895,7 +950,7 @@ export default function PortfolioPage() {
                 delay: 80,
               },
               {
-                no: "03",
+                no: "04",
                 role: "Tim Penelitian Aplikasi Prediksi",
                 company: "STMIK El Rahma Yogyakarta",
                 period: "Februari – Juni 2025",
@@ -905,7 +960,7 @@ export default function PortfolioPage() {
                 delay: 120,
               },
               {
-                no: "04",
+                no: "05",
                 role: "Backend Developer",
                 company: "PT Dewa Nusa Utama",
                 period: "Februari – April 2025",
@@ -915,7 +970,7 @@ export default function PortfolioPage() {
                 delay: 160,
               },
               {
-                no: "05",
+                no: "06",
                 role: "Tim Pemateri Pelatihan AI",
                 company: "LPPM STMIK El Rahma",
                 period: "September 2024",
@@ -925,7 +980,7 @@ export default function PortfolioPage() {
                 delay: 200,
               },
               {
-                no: "06",
+                no: "07",
                 role: "Full Stack Web Developer",
                 company: "Maharani Transport",
                 period: "Februari – Maret 2023",
