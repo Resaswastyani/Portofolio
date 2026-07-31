@@ -195,10 +195,10 @@ function SkillBar({ label, level }: { label: string; level: number }) {
 
 // ─── 3D Project Card ─────────────────────────────────────────────────────────
 function ProjectCard({
-  title, category, tech, desc, link, image, accent = "#111", delay = 0, featured = false
+  title, category, tech, desc, link, image, images, accent = "#111", delay = 0, featured = false, isLive = false
 }: {
   title: string; category: string; tech: string; desc: string; link: string;
-  image?: string; accent?: string; delay?: number; featured?: boolean
+  image?: string; images?: string[]; accent?: string; delay?: number; featured?: boolean; isLive?: boolean
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const x = useMotionValue(0)
@@ -237,23 +237,39 @@ function ProjectCard({
         />
 
         {/* Image area */}
-        {image && (
+        {(image || images) && (
           <div className="relative overflow-hidden" style={{ height: featured ? "280px" : "200px" }}>
-            <img
-              src={image}
-              alt={title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              style={{ transform: "translateZ(20px)" }}
-            />
+            {images ? (
+              <div className="flex w-full h-full">
+                {images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`${title} ${i}`}
+                    className="flex-1 h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    style={{ transform: "translateZ(20px)" }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                style={{ transform: "translateZ(20px)" }}
+              />
+            )}
             {/* Gradient overlay on image */}
             <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.95) 100%)" }} />
             {/* Floating badge */}
-            <div className="absolute top-3 right-3" style={{ transform: "translateZ(40px)" }}>
-              <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md"
-                style={{ background: accent + "cc" }}>
-                LIVE
+            {isLive && (
+              <div className="absolute top-3 right-3" style={{ transform: "translateZ(40px)" }}>
+                <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md"
+                  style={{ background: accent + "cc" }}>
+                  LIVE
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -285,7 +301,7 @@ function ProjectCard({
 }
 
 // ─── Local Video Embed ─────────────────────────────────────────────────────────
-function LocalVideoEmbed({ src, title, desc }: { src: string; title: string; desc: string }) {
+function LocalVideoEmbed({ src, title, desc, isLive = false }: { src: string; title: string; desc: string; isLive?: boolean }) {
   const { ref, inView } = useInView(0.1)
 
   return (
@@ -313,6 +329,13 @@ function LocalVideoEmbed({ src, title, desc }: { src: string; title: string; des
             className="absolute inset-0 w-full h-full object-cover"
             src={src}
           />
+        )}
+        {isLive && (
+          <div className="absolute top-3 right-3 z-10" style={{ transform: "translateZ(40px)" }}>
+            <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md bg-black/40 border border-white/10">
+              LIVE
+            </div>
+          </div>
         )}
       </div>
 
@@ -596,17 +619,19 @@ export default function PortfolioPage() {
             {/* 2-col layout: left=Maharani web preview, right=Canva video embed */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-              {/* Maharani Transport — web UI preview */}
-              <ProjectCard
-                title="Maharani Transport — Car Rental Platform"
-                category="Web App · Full Stack"
-                tech="PHP, Bootstrap, MySQL"
-                desc="Website penyewaan mobil yang live beroperasi. Dilengkapi katalog kendaraan, WooCommerce, dan pemesanan langsung via WhatsApp. Dibangun sebagai Full Stack Developer saat internship Feb–Mar 2023."
-                link="https://maharanitransport.com"
-                image="/images/maharani-web-preview.png"
-                accent="#1e3a5f"
-                delay={0}
-              />
+              {/* Property Management System — video embed */}
+              <div style={{
+                opacity: 1,
+                transform: "translateY(0)",
+                transition: "opacity 0.7s ease 0ms, transform 0.7s ease 0ms",
+              }}>
+                <LocalVideoEmbed
+                  src="/video/Perumahan.mp4"
+                  title="Property Management System"
+                  desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
+                  isLive={true}
+                />
+              </div>
 
               {/* Project Video — Local Video Embed */}
               <div style={{
@@ -618,6 +643,7 @@ export default function PortfolioPage() {
                   src="/video/Rupakata.mp4"
                   title="Portfolio & Project Presentation"
                   desc="Desain visual & presentasi profesional yang mencakup proyek kampus, materi pelatihan AI untuk guru, dan konten branding."
+                  isLive={true}
                 />
               </div>
 
@@ -647,18 +673,17 @@ export default function PortfolioPage() {
               link="#"
               delay={80}
             />
-            {/* Property Management System — video embed */}
-            <div style={{
-              opacity: 1,
-              transform: "translateY(0)",
-              transition: "opacity 0.7s ease 160ms, transform 0.7s ease 160ms",
-            }}>
-              <LocalVideoEmbed
-                src="/video/Perumahan.mp4"
-                title="Property Management System"
-                desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
-              />
-            </div>
+            {/* Maharani Transport — web UI preview */}
+            <ProjectCard
+              title="Maharani Transport — Car Rental Platform"
+              category="Web App · Full Stack"
+              tech="PHP, Bootstrap, MySQL"
+              desc="Website penyewaan mobil yang live beroperasi. Dilengkapi katalog kendaraan, WooCommerce, dan pemesanan langsung via WhatsApp. Dibangun sebagai Full Stack Developer saat internship Feb–Mar 2023."
+              link="https://maharanitransport.com"
+              image="/images/maharani-web-preview.png"
+              accent="#1e3a5f"
+              delay={160}
+            />
             <ProjectCard
               title="Student Graduation Prediction"
               category="Machine Learning"
@@ -667,21 +692,47 @@ export default function PortfolioPage() {
               link="#"
               delay={240}
             />
-            <ProjectCard
-              title="Smart Egg Incubator"
-              category="IoT"
-              tech="Raspberry Pi Pico"
-              desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
-              link="#"
-              delay={320}
-            />
+            {/* Smart Egg Incubator — video embed */}
+            <div style={{
+              opacity: 1,
+              transform: "translateY(0)",
+              transition: "opacity 0.7s ease 320ms, transform 0.7s ease 320ms",
+            }}>
+              <LocalVideoEmbed
+                src="/video/egg.mp4"
+                title="Smart Egg Incubator"
+                desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
+              />
+            </div>
             <ProjectCard
               title="AI Training Materials"
               category="AI · Education"
               tech="AI Tools, Workshop"
               desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
               link="#"
+              images={["/images/plt1 (1).jpeg", "/images/plt1 (2).jpeg"]}
               delay={400}
+            />
+            {/* Maharani Video */}
+            <div style={{
+              opacity: 1,
+              transform: "translateY(0)",
+              transition: "opacity 0.7s ease 480ms, transform 0.7s ease 480ms",
+            }}>
+              <LocalVideoEmbed
+                src="/video/Maharani.mp4"
+                title="Maharani Transport App"
+                desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
+              />
+            </div>
+            {/* Forex For Better Living */}
+            <ProjectCard
+              title="Forex For Better Living"
+              category="Web App"
+              tech="Forex, Education"
+              desc="Platform Edukasi dan Konsultasi Forex Trading terpercaya yang menyediakan sistem trading untuk membantu masyarakat."
+              link="https://www.forexforbetterliving.com/"
+              delay={560}
             />
           </div>
         </div>
