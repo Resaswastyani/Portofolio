@@ -143,10 +143,10 @@ export function DevExSection() {
   const step = STEPS[active]
 
   return (
-    <section id="devex" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06]">
+    <section id="devex" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
       <div className="max-w-6xl mx-auto">
         <div className="mb-16">
-          <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/[0.05] border border-black/[0.06] text-[10px] tracking-widest text-black/40 uppercase">
+          <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/[0.05] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.08] text-[10px] tracking-widest text-black/40 dark:text-white/40 uppercase">
             Developer Experience
           </div>
           <h2 className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
@@ -155,7 +155,7 @@ export function DevExSection() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
-          {/* Left — 4 clickable step cards, equal height, no flex stretch */}
+          {/* Left — 4 clickable step cards */}
           <div className="flex flex-col gap-3">
             {STEPS.map((s, i) => (
               <button
@@ -163,8 +163,10 @@ export function DevExSection() {
                 onClick={() => selectStep(i)}
                 className="flex-1 text-left rounded-2xl border transition-all duration-200 p-6 group"
                 style={{
-                  background: active === i ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.7)",
-                  borderColor: active === i ? "rgba(0,0,0,0.12)" : "rgba(0,0,0,0.06)",
+                  background: active === i
+                    ? "rgba(128,128,128,0.08)"
+                    : "var(--bg-card)",
+                  borderColor: active === i ? "rgba(128,128,128,0.15)" : "rgba(128,128,128,0.1)",
                   boxShadow: active === i
                     ? "0 1px 3px rgba(0,0,0,0.06)"
                     : "0 1px 2px rgba(0,0,0,0.03)",
@@ -174,8 +176,8 @@ export function DevExSection() {
                   <div
                     className="flex items-center justify-center w-8 h-8 rounded-lg text-xs font-light shrink-0 transition-colors duration-200"
                     style={{
-                      background: active === i ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.04)",
-                      color: active === i ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.35)",
+                      background: active === i ? "rgba(128,128,128,0.12)" : "rgba(128,128,128,0.06)",
+                      color: active === i ? "rgba(128,128,128,0.9)" : "rgba(128,128,128,0.5)",
                     }}
                   >
                     {s.num}
@@ -183,22 +185,22 @@ export function DevExSection() {
                   <div className="min-w-0">
                     <p
                       className="text-sm font-light transition-colors duration-200"
-                      style={{ color: active === i ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.5)" }}
+                      style={{ color: active === i ? "currentColor" : "rgba(128,128,128,0.6)" }}
                     >
                       {s.title}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(0,0,0,0.28)" }}>{s.desc}</p>
+                    <p className="text-xs mt-0.5 opacity-40">{s.desc}</p>
                   </div>
                 </div>
               </button>
             ))}
           </div>
 
-          {/* Right — fixed-size code panel */}
+          {/* Right — code panel */}
           <div
-            className="lg:col-span-2 rounded-2xl border border-black/[0.06] p-8 flex flex-col"
+            className="lg:col-span-2 rounded-2xl border border-black/[0.06] dark:border-white/[0.08] p-8 flex flex-col"
             style={{
-              background: "rgba(255,255,255,0.7)",
+              background: "var(--bg-card)",
               boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
               minHeight: "360px",
             }}
@@ -206,12 +208,11 @@ export function DevExSection() {
             {/* Header */}
             <div className="flex items-center justify-between mb-5 shrink-0">
               <div
-                className="text-[10px] tracking-widest uppercase transition-all duration-200"
+                className="text-[10px] tracking-widest uppercase text-black/30 dark:text-white/30 transition-all duration-200"
                 style={{
                   opacity: visible ? 1 : 0,
                   filter: visible ? "blur(0px)" : "blur(4px)",
                   transition: "opacity 200ms ease, filter 200ms ease",
-                  color: "rgba(0,0,0,0.3)",
                 }}
               >
                 {step.file}
@@ -222,15 +223,15 @@ export function DevExSection() {
                     key={d}
                     className="w-2 h-2 rounded-full transition-all duration-300"
                     style={{
-                      background: d === active % 3 ? "rgba(0,0,0,0.25)" : "rgba(0,0,0,0.08)",
+                      background: d === active % 3 ? "rgba(128,128,128,0.4)" : "rgba(128,128,128,0.12)",
                     }}
                   />
                 ))}
               </div>
             </div>
 
-            {/* Code block — fixed height, content doesn't affect layout */}
-            <div className="flex-1 rounded-xl p-6 overflow-hidden" style={{ background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.06)" }}>
+            {/* Code block */}
+            <div className="flex-1 rounded-xl p-6 overflow-hidden bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06]">
               <div
                 className="font-mono text-[12px] leading-6"
                 style={{
