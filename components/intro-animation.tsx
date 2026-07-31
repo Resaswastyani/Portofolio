@@ -81,21 +81,24 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
               : "none"
 
             return (
-              <span
-                key={i}
-                className="font-sans font-bold text-[#111] leading-none select-none text-center"
-                style={{
-                  fontSize: `clamp(2rem, 7vw, 5rem)`,
-                  letterSpacing: "-0.02em",
-                  opacity,
-                  filter: `blur(${blur}px)`,
-                  transform: `translateY(${translateY}px)`,
-                  transition,
-                  willChange: "opacity, filter, transform",
-                }}
-              >
-                {item}
-              </span>
+              <React.Fragment key={i}>
+                <span
+                  className="font-sans font-bold text-[#111] leading-none select-none text-center"
+                  style={{
+                    fontSize: `clamp(3rem, 11vw, 8rem)`,
+                    letterSpacing: "-0.02em",
+                    opacity,
+                    filter: `blur(${blur}px)`,
+                    transform: `translateY(${translateY}px)`,
+                    transition,
+                    willChange: "opacity, filter, transform",
+                  }}
+                >
+                  {item}
+                </span>
+                {/* Force break after Portofolio */}
+                {i === 0 && <div className="basis-full h-0" />}
+              </React.Fragment>
             )
           })}
         </div>

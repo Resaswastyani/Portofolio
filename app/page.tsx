@@ -300,17 +300,16 @@ function LocalVideoEmbed({ src, title, desc }: { src: string; title: string; des
         <div className="flex-1 h-5 bg-black/[0.05] rounded-full flex items-center px-3">
           <span className="text-[10px] text-black/30 tracking-wide truncate">{title}</span>
         </div>
-      </div>
 
       {/* Local Video Player */}
-      <div className="relative flex-1 bg-black/5 flex items-center justify-center overflow-hidden" style={{ minHeight: "260px" }}>
+      <div className="relative flex-1 bg-black/5 flex items-center justify-center overflow-hidden min-h-[220px]">
         {inView && (
           <video
             controls
             autoPlay
             muted
             loop
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             src={src}
           />
         )}
@@ -647,14 +646,18 @@ export default function PortfolioPage() {
               link="#"
               delay={80}
             />
-            <ProjectCard
-              title="Property Management System"
-              category="Real Estate"
-              tech="Laravel, PHP"
-              desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
-              link="#"
-              delay={160}
-            />
+            {/* Property Management System — video embed */}
+            <div style={{
+              opacity: 1,
+              transform: "translateY(0)",
+              transition: "opacity 0.7s ease 160ms, transform 0.7s ease 160ms",
+            }}>
+              <LocalVideoEmbed
+                src="/video/Perumahan.mp4"
+                title="Property Management System"
+                desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
+              />
+            </div>
             <ProjectCard
               title="Student Graduation Prediction"
               category="Machine Learning"
