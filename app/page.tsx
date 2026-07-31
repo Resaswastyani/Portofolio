@@ -300,11 +300,26 @@ function ProjectCard({
 }
 
 // ─── Local Video Embed ─────────────────────────────────────────────────────────
-function LocalVideoEmbed({ src, title, desc, isLive = false }: { src: string; title: string; desc: string; isLive?: boolean }) {
-  const { ref, inView } = useInView(0.1)
+function LocalVideoEmbed({ src, title, desc, delay = 0, isLive = false }: { src: string; title: string; desc: string; delay?: number; isLive?: boolean }) {
+  const { ref: inRef, inView } = useInView(0.15)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    if (inView && videoRef.current) {
+      videoRef.current.play().catch(() => {})
+    } else if (!inView && videoRef.current) {
+      videoRef.current.pause()
+    }
+  }, [inView])
 
   return (
-    <div ref={ref} className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
+    <div ref={inRef} className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col"
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(32px)",
+        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+      }}
+    >
       {/* MacOS-style browser bar */}
       <div className="flex items-center gap-3 px-5 py-3 border-b border-black/[0.05] dark:border-white/[0.05] bg-[#fafaf8] dark:bg-[#222220] shrink-0">
         <div className="flex gap-1.5">
@@ -319,16 +334,17 @@ function LocalVideoEmbed({ src, title, desc, isLive = false }: { src: string; ti
 
       {/* Local Video Player */}
       <div className="relative flex-1 bg-black/5 dark:bg-black/30 flex items-center justify-center overflow-hidden min-h-[220px]">
-        {inView && (
-          <video
-            controls
-            autoPlay
-            muted
-            loop
-            className="absolute inset-0 w-full h-full object-cover"
-            src={src}
-          />
-        )}
+        <video
+          ref={videoRef}
+          controls
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover"
+          src={src}
+          style={{ opacity: inView ? 1 : 0, transition: "opacity 0.7s ease" }}
+        />
         {isLive && (
           <div className="absolute top-3 right-3 z-10">
             <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md bg-black/40 border border-white/10">
@@ -416,27 +432,27 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
 
         {/* Iframe container — scaled to fit */}
         <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white">
-          {inView && (
-            <iframe
-              ref={iframeRef}
-              src="https://www.forexforbetterliving.com/"
-              title="Forex For Better Living"
-              onLoad={() => setLoaded(true)}
-              scrolling="no"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "400%",
-                height: "800px",
-                border: "none",
-                transformOrigin: "top left",
-                transform: "scale(0.25)",
-                pointerEvents: "none",
-                display: "block",
-              }}
-            />
-          )}
+          <iframe
+            ref={iframeRef}
+            src="https://www.forexforbetterliving.com/"
+            title="Forex For Better Living"
+            onLoad={() => setLoaded(true)}
+            scrolling="no"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "400%",
+              height: "800px",
+              border: "none",
+              transformOrigin: "top left",
+              transform: "scale(0.25)",
+              pointerEvents: "none",
+              display: "block",
+              opacity: loaded && inView ? 1 : 0,
+              transition: "opacity 0.7s ease",
+            }}
+          />
 
           {/* LIVE badge */}
           <div className="absolute bottom-2 right-2 z-10">
@@ -448,8 +464,8 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
           </div>
 
           {/* Loading skeleton */}
-          {!loaded && inView && (
-            <div className="absolute inset-0 bg-white flex items-center justify-center">
+          {!loaded && (
+            <div className="absolute inset-0 bg-white flex items-center justify-center z-0">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#111A4A] flex items-center justify-center">
                   <span className="text-[10px] font-black text-[#22d3a8]">FBL</span>
@@ -789,6 +805,7 @@ export default function PortfolioPage() {
               title="Maharani Transport App"
               desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
             />
+            <ForexWebsiteEmbed delay={160} />
             {/* — TANPA MEDIA — */}
             <ProjectCard
               title="Marketplace System"
@@ -812,9 +829,8 @@ export default function PortfolioPage() {
               tech="Python, Scikit-learn"
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
               link="#"
-              delay={320}
+              delay={400}
             />
-            <ForexWebsiteEmbed delay={400} />
           </div>
         </div>
       </section>
