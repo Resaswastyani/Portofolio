@@ -193,6 +193,125 @@ function SkillBar({ label, level }: { label: string; level: number }) {
   )
 }
 
+// ─── 3D Project Card ─────────────────────────────────────────────────────────
+function ProjectCard({
+  title, category, tech, desc, link, image, accent = "#111", delay = 0, featured = false
+}: {
+  title: string; category: string; tech: string; desc: string; link: string;
+  image?: string; accent?: string; delay?: number; featured?: boolean
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const mouseXSpring = useSpring(x, { stiffness: 200, damping: 25 })
+  const mouseYSpring = useSpring(y, { stiffness: 200, damping: 25 })
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"])
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"])
+  const { ref: inRef, inView } = useInView(0.1)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    x.set((e.clientX - rect.left) / rect.width - 0.5)
+    y.set((e.clientY - rect.top) / rect.height - 0.5)
+  }
+  const handleMouseLeave = () => { x.set(0); y.set(0) }
+
+  return (
+    <div ref={inRef} className={featured ? "md:col-span-2" : ""} style={{
+      opacity: inView ? 1 : 0,
+      transform: inView ? "translateY(0)" : "translateY(32px)",
+      transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+    }}>
+      <motion.div
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: "1000px" }}
+        className="group relative rounded-2xl border border-black/[0.08] bg-white overflow-hidden cursor-pointer transition-all duration-300 hover:border-black/20 hover:shadow-2xl h-full"
+      >
+
+        {/* Shimmer overlay */}
+        <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"
+          style={{ background: "radial-gradient(600px circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,255,255,0.08), transparent 50%)" }}
+        />
+
+        {/* Image area */}
+        {image && (
+          <div className="relative overflow-hidden" style={{ height: featured ? "280px" : "200px" }}>
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              style={{ transform: "translateZ(20px)" }}
+            />
+            {/* Gradient overlay on image */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.95) 100%)" }} />
+            {/* Floating badge */}
+            <div className="absolute top-3 right-3" style={{ transform: "translateZ(40px)" }}>
+              <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md"
+                style={{ background: accent + "cc" }}>
+                LIVE
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="p-6 flex flex-col" style={{ transform: "translateZ(10px)" }}>
+          <div className="flex justify-between items-start mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] tracking-widest font-sans text-black/40 bg-black/[0.04]">
+              {category}
+            </span>
+            <a href={link} target="_blank" rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full bg-black/[0.04] flex items-center justify-center text-black/40 hover:bg-black/[0.08] hover:text-black transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+          <h3 className="text-xl font-light mb-2">{title}</h3>
+          <p className="text-sm text-black/45 leading-relaxed mb-5 flex-1">{desc}</p>
+          <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between">
+            <span className="text-xs text-black/40 tracking-wide">{tech}</span>
+            <div className="flex gap-1">
+              {tech.split(",").slice(0,3).map((t, i) => (
+                <div key={i} className="w-1.5 h-1.5 rounded-full bg-black/15" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+// ─── Floating Gallery Strip ────────────────────────────────────────────────────
+function FloatingImageStrip() {
+  const images = [
+    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/avanza.webp", label: "Avanza" },
+    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/innova-reborn.webp", label: "Innova Reborn" },
+    { src: "https://maharanitransport.com/wp-content/uploads/2023/11/innova-venturer.webp", label: "Innova Venturer" },
+    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/innova-zenix.webp", label: "Innova Zenix" },
+    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/hiace-commuter.png", label: "Hiace Commuter" },
+    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/pajero-sport.png", label: "Pajero Sport" },
+  ]
+
+  return (
+    <div className="relative overflow-hidden py-6">
+      <div className="flex gap-4" style={{ animation: "marqueeLeft 20s linear infinite", width: "max-content" }}>
+        {[...images, ...images].map((img, i) => (
+          <div key={i} className="relative shrink-0 w-52 h-36 rounded-xl overflow-hidden border border-black/[0.07] bg-white group"
+            style={{ animation: `floatY ${2.5 + (i % 3) * 0.7}s ease-in-out ${(i % 4) * 0.4}s infinite alternate` }}>
+            <img src={img.src} alt={img.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+              <span className="text-xs text-white font-light">{img.label}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
   const [email, setEmail] = useState("")
@@ -426,9 +545,15 @@ export default function PortfolioPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          PROJECT GALLERY — grid cards
+          PROJECT GALLERY — 3D interactive cards with real images
           ══════════════════════════════════════════════════════════════════════ */}
       <section id="projects" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] overflow-hidden">
+        <style>{`
+          @keyframes floatY {
+            from { transform: translateY(0px); }
+            to   { transform: translateY(-10px); }
+          }
+        `}</style>
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
             <div>
@@ -439,82 +564,113 @@ export default function PortfolioPage() {
               </RevealText>
             </div>
             <p className="text-sm text-black/45 leading-relaxed max-w-xs">
-              Beberapa proyek pilihan dari berbagai industri, mulai dari sistem e-commerce hingga penelitian machine learning.
+              Proyek nyata dari berbagai industri — mulai dari platform rental mobil live, desain Canva, hingga machine learning dan IoT.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" onMouseMove={handleMouse}>
-            {[
-              {
-                title: "Marketplace System",
-                category: "E-Commerce",
-                tech: "Laravel 12, Next.js",
-                desc: "Sistem marketplace komprehensif dengan arsitektur modern.",
-                link: "#", // Ganti dengan link dari CV
-                delay: 0,
-              },
-              {
-                title: "Water Metering & Billing",
-                category: "Utility",
-                tech: "Next.js, WA API",
-                desc: "Pencatatan meteran air dengan pengiriman tagihan otomatis via WhatsApp.",
-                link: "#", // Ganti dengan link dari CV
-                delay: 80,
-              },
-              {
-                title: "Property Management",
-                category: "Real Estate",
-                tech: "Laravel, PHP",
-                desc: "Sistem manajemen perumahan dan integrasi gateway pembayaran.",
-                link: "#", // Ganti dengan link dari CV
-                delay: 160,
-              },
-              {
-                title: "Student Graduation Prediction",
-                category: "Machine Learning",
-                tech: "Python, Scikit-learn",
-                desc: "Prediksi kelulusan menggunakan algoritma KNN & Decision Tree.",
-                link: "#", // Ganti dengan link dari CV
-                delay: 240,
-              },
-              {
-                title: "Car Rental Platform",
-                category: "Web App",
-                tech: "PHP, Bootstrap",
-                desc: "Platform pemesanan dan manajemen armada penyewaan mobil.",
-                link: "#", // Ganti dengan link dari CV
-                delay: 320,
-              },
-              {
-                title: "Smart Egg Incubator",
-                category: "IoT",
-                tech: "Raspberry Pi",
-                desc: "Inkubator telur otomatis berbasis IoT untuk pemantauan suhu real-time.",
-                link: "#", // Ganti dengan link dari CV
-                delay: 400,
-              },
-            ].map((project, i) => (
-              <BentoCard key={i} className="flex flex-col group" delay={project.delay}>
-                <div className="p-6 flex-1 flex flex-col">
-                  <div className="flex justify-between items-start mb-4">
-                    <Tag>{project.category}</Tag>
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded-full bg-black/[0.04] flex items-center justify-center text-black/40 hover:bg-black/[0.08] hover:text-black transition-colors"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                  </div>
-                  <h3 className="text-xl font-light mb-2">{project.title}</h3>
-                  <p className="text-sm text-black/45 leading-relaxed mb-6 flex-1">{project.desc}</p>
-                  <div className="pt-4 border-t border-black/[0.06]">
-                    <span className="text-xs text-black/40 tracking-wide">{project.tech}</span>
-                  </div>
-                </div>
-              </BentoCard>
-            ))}
+          {/* ── Maharani Transport — Featured Project ── */}
+          <div className="mb-8">
+            <div className="text-[11px] text-black/25 tracking-widest uppercase mb-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-black/[0.06]" />
+              <span>Proyek Unggulan</span>
+              <div className="h-px flex-1 bg-black/[0.06]" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Featured card — Maharani Transport website */}
+              <ProjectCard
+                title="Maharani Transport — Car Rental Platform"
+                category="Web App · Full Stack"
+                tech="PHP, Bootstrap, MySQL"
+                desc="Platform pemesanan dan manajemen armada penyewaan mobil yang live dan aktif beroperasi. Menampilkan katalog kendaraan, integrasi WooCommerce, dan pemesanan via WhatsApp. Dikembangkan saat internship sebagai Full Stack Developer."
+                link="https://maharanitransport.com"
+                image="https://maharanitransport.com/wp-content/uploads/2023/03/innova-zenix.webp"
+                accent="#1e3a5f"
+                delay={0}
+                featured
+              />
+              {/* Canva Design project */}
+              <ProjectCard
+                title="UI/UX Design — Canva Portfolio"
+                category="Design · Branding"
+                tech="Canva, Figma, Visual Design"
+                desc="Koleksi desain visual & branding yang dibuat menggunakan Canva — mencakup presentasi profesional, materi pelatihan AI, dan konten digital untuk berbagai kegiatan kampus dan profesional."
+                link="https://canva.link/gplywe5v4m5a5ng"
+                image="https://maharanitransport.com/wp-content/uploads/2023/03/hiace-premio.png"
+                accent="#7c3aed"
+                delay={80}
+              />
+            </div>
+          </div>
+
+          {/* ── Floating image strip — armada Maharani Transport ── */}
+          <div className="mb-8 rounded-2xl border border-black/[0.06] bg-white overflow-hidden px-4">
+            <div className="flex items-center gap-3 px-2 pt-4 pb-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] text-black/30 tracking-widest uppercase">Armada Maharani Transport · Live Preview</span>
+              <a href="https://maharanitransport.com/shop/" target="_blank" rel="noopener noreferrer"
+                className="ml-auto text-[11px] text-black/30 hover:text-black/60 transition-colors tracking-wide flex items-center gap-1">
+                Lihat semua
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+            <FloatingImageStrip />
+          </div>
+
+          {/* ── Other projects grid ── */}
+          <div className="text-[11px] text-black/25 tracking-widest uppercase mb-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-black/[0.06]" />
+            <span>Proyek Lainnya</span>
+            <div className="h-px flex-1 bg-black/[0.06]" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ProjectCard
+              title="Marketplace System"
+              category="E-Commerce"
+              tech="Laravel 12, Next.js"
+              desc="Sistem marketplace komprehensif dengan arsitektur modern, multi-vendor, dan dashboard admin real-time."
+              link="#"
+              delay={0}
+            />
+            <ProjectCard
+              title="Water Metering & Billing"
+              category="Utility"
+              tech="Next.js, WA API"
+              desc="Pencatatan meteran air dengan pengiriman tagihan otomatis dan notifikasi pengingat via WhatsApp API."
+              link="#"
+              delay={80}
+            />
+            <ProjectCard
+              title="Property Management System"
+              category="Real Estate"
+              tech="Laravel, PHP"
+              desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
+              link="#"
+              delay={160}
+            />
+            <ProjectCard
+              title="Student Graduation Prediction"
+              category="Machine Learning"
+              tech="Python, Scikit-learn"
+              desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
+              link="#"
+              delay={240}
+            />
+            <ProjectCard
+              title="Smart Egg Incubator"
+              category="IoT"
+              tech="Raspberry Pi Pico"
+              desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
+              link="#"
+              delay={320}
+            />
+            <ProjectCard
+              title="AI Training Materials"
+              category="AI · Education"
+              tech="AI Tools, Workshop"
+              desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
+              link="#"
+              delay={400}
+            />
           </div>
         </div>
       </section>
