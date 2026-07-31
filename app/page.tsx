@@ -300,6 +300,7 @@ function LocalVideoEmbed({ src, title, desc }: { src: string; title: string; des
         <div className="flex-1 h-5 bg-black/[0.05] rounded-full flex items-center px-3">
           <span className="text-[10px] text-black/30 tracking-wide truncate">{title}</span>
         </div>
+      </div>
 
       {/* Local Video Player */}
       <div className="relative flex-1 bg-black/5 flex items-center justify-center overflow-hidden min-h-[220px]">
