@@ -352,6 +352,132 @@ function LocalVideoEmbed({ src, title, desc, isLive = false }: { src: string; ti
 }
 
 
+// ─── Forex Website Iframe Embed ───────────────────────────────────────────────
+function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
+  const { ref: inRef, inView } = useInView(0.1)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [loaded, setLoaded] = useState(false)
+
+  // Auto-scroll the iframe after it loads
+  useEffect(() => {
+    if (!loaded || !iframeRef.current) return
+    let pos = 0
+    const tick = () => {
+      try {
+        const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document
+        if (doc && doc.body) {
+          pos += 1.2
+          const max = doc.body.scrollHeight - (doc.documentElement?.clientHeight || 600)
+          if (pos > max) pos = 0
+          doc.documentElement.scrollTop = pos
+        }
+      } catch { /* cross-origin: scrolling blocked, just show the page */ }
+    }
+    const interval = setInterval(tick, 30)
+    return () => clearInterval(interval)
+  }, [loaded])
+
+  return (
+    <div
+      ref={inRef}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(32px)",
+        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+      }}
+    >
+      <div className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
+
+        {/* MacOS-style browser bar */}
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-black/[0.05] dark:border-white/[0.05] bg-[#fafaf8] dark:bg-[#222220] shrink-0">
+          <div className="flex gap-1.5 shrink-0">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+            <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+          </div>
+          <div className="flex-1 h-5 bg-black/[0.05] dark:bg-white/[0.05] rounded-full flex items-center px-3 gap-1.5 min-w-0">
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#167E6C" strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">forexforbetterliving.com</span>
+          </div>
+          <a
+            href="https://www.forexforbetterliving.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 w-6 h-6 flex items-center justify-center text-black/30 dark:text-white/30 hover:text-black dark:hover:text-white transition-colors"
+            title="Buka website"
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+        </div>
+
+        {/* Iframe container — scaled to fit */}
+        <div className="relative flex-1 overflow-hidden min-h-[240px] bg-white">
+          {inView && (
+            <iframe
+              ref={iframeRef}
+              src="https://www.forexforbetterliving.com/"
+              title="Forex For Better Living"
+              onLoad={() => setLoaded(true)}
+              scrolling="no"
+              style={{
+                width: "1280px",
+                height: "900px",
+                border: "none",
+                transformOrigin: "top left",
+                transform: "scale(0.28)",
+                pointerEvents: "none",
+                display: "block",
+              }}
+            />
+          )}
+
+          {/* LIVE badge */}
+          <div className="absolute bottom-2 right-2 z-10">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-medium text-white tracking-wide"
+              style={{ background: "#167E6C" }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#22d3a8] animate-pulse shrink-0" />
+              LIVE WEBSITE
+            </div>
+          </div>
+
+          {/* Loading skeleton */}
+          {!loaded && inView && (
+            <div className="absolute inset-0 bg-white flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#111A4A] flex items-center justify-center">
+                  <span className="text-[10px] font-black text-[#22d3a8]">FBL</span>
+                </div>
+                <div className="text-[10px] text-black/30 animate-pulse">Memuat website...</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer info */}
+        <div className="px-5 py-3.5 border-t border-black/[0.05] dark:border-white/[0.05] shrink-0">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-light text-black/70 dark:text-white/70">Forex For Better Living</h3>
+            <span className="px-1.5 py-0.5 rounded text-[9px] bg-[#167E6C]/10 text-[#167E6C]">Live</span>
+          </div>
+          <p className="text-xs text-black/40 dark:text-white/40 mt-1 leading-relaxed">
+            Platform Edukasi & Konsultasi Forex Trading — Next.js, Robot Trading (EA), Indikator Canggih.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+
+
+
+
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
   const [email, setEmail] = useState("")
@@ -685,14 +811,7 @@ export default function PortfolioPage() {
               link="#"
               delay={320}
             />
-            <ProjectCard
-              title="Forex For Better Living"
-              category="Web App"
-              tech="Forex, Education"
-              desc="Platform Edukasi dan Konsultasi Forex Trading terpercaya yang menyediakan sistem trading untuk membantu masyarakat."
-              link="https://www.forexforbetterliving.com/"
-              delay={400}
-            />
+            <ForexWebsiteEmbed delay={400} />
           </div>
         </div>
       </section>
