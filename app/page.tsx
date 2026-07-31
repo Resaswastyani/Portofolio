@@ -415,7 +415,7 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
         </div>
 
         {/* Iframe container — scaled to fit */}
-        <div className="relative flex-1 overflow-hidden min-h-[240px] bg-white">
+        <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white">
           {inView && (
             <iframe
               ref={iframeRef}
@@ -424,11 +424,14 @@ function ForexWebsiteEmbed({ delay = 0 }: { delay?: number }) {
               onLoad={() => setLoaded(true)}
               scrolling="no"
               style={{
-                width: "1280px",
-                height: "900px",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "400%",
+                height: "800px",
                 border: "none",
                 transformOrigin: "top left",
-                transform: "scale(0.28)",
+                transform: "scale(0.25)",
                 pointerEvents: "none",
                 display: "block",
               }}
