@@ -198,6 +198,27 @@
   50% { opacity: 0.4; transform: scale(0.8) }
 }
 
+/* Portfolio custom variables */
+:root {
+  --bg-main: #F5F4F0;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafaf8;
+  --bg-nav: rgba(245,244,240,0.30);
+  --text-main: #111;
+  --gradient-main: linear-gradient(to top, #F5F4F0 0%, #F5F4F0 18%, rgba(245,244,240,0.85) 35%, rgba(245,244,240,0.5) 55%, rgba(245,244,240,0.15) 75%, transparent 100%);
+  --gradient-cta: linear-gradient(to top, rgb(245,244,240) 0%, rgba(245,244,240,0.92) 18%, rgba(245,244,240,0.55) 35%, transparent 55%);
+}
+
+.dark {
+  --bg-main: #111110;
+  --bg-card: #1c1c1a;
+  --bg-card-hover: #222220;
+  --bg-nav: rgba(20,20,18,0.60);
+  --text-main: #ececea;
+  --gradient-main: linear-gradient(to top, #111110 0%, #111110 18%, rgba(17,17,16,0.85) 35%, rgba(17,17,16,0.5) 55%, rgba(17,17,16,0.15) 75%, transparent 100%);
+  --gradient-cta: linear-gradient(to top, rgb(17,17,16) 0%, rgba(17,17,16,0.92) 18%, rgba(17,17,16,0.55) 35%, transparent 55%);
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
