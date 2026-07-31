@@ -265,7 +265,7 @@ function ProjectCard({
             </span>
             <a href={link} target="_blank" rel="noopener noreferrer"
               className="w-8 h-8 rounded-full bg-black/[0.04] flex items-center justify-center text-black/40 hover:bg-black/[0.08] hover:text-black transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
             </a>
           </div>
           <h3 className="text-xl font-light mb-2">{title}</h3>
@@ -273,7 +273,7 @@ function ProjectCard({
           <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between">
             <span className="text-xs text-black/40 tracking-wide">{tech}</span>
             <div className="flex gap-1">
-              {tech.split(",").slice(0,3).map((t, i) => (
+              {tech.split(",").slice(0, 3).map((t, i) => (
                 <div key={i} className="w-1.5 h-1.5 rounded-full bg-black/15" />
               ))}
             </div>
@@ -284,33 +284,83 @@ function ProjectCard({
   )
 }
 
-// ─── Floating Gallery Strip ────────────────────────────────────────────────────
-function FloatingImageStrip() {
-  const images = [
-    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/avanza.webp", label: "Avanza" },
-    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/innova-reborn.webp", label: "Innova Reborn" },
-    { src: "https://maharanitransport.com/wp-content/uploads/2023/11/innova-venturer.webp", label: "Innova Venturer" },
-    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/innova-zenix.webp", label: "Innova Zenix" },
-    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/hiace-commuter.png", label: "Hiace Commuter" },
-    { src: "https://maharanitransport.com/wp-content/uploads/2023/03/pajero-sport.png", label: "Pajero Sport" },
-  ]
+// ─── Canva Video Embed ─────────────────────────────────────────────────────────
+function CanvaEmbed({ designId, shortId, title, desc }: { designId: string; shortId: string; title: string; desc: string }) {
+  const { ref, inView } = useInView(0.1)
+  const [loaded, setLoaded] = React.useState(false)
 
   return (
-    <div className="relative overflow-hidden py-6">
-      <div className="flex gap-4" style={{ animation: "marqueeLeft 20s linear infinite", width: "max-content" }}>
-        {[...images, ...images].map((img, i) => (
-          <div key={i} className="relative shrink-0 w-52 h-36 rounded-xl overflow-hidden border border-black/[0.07] bg-white group"
-            style={{ animation: `floatY ${2.5 + (i % 3) * 0.7}s ease-in-out ${(i % 4) * 0.4}s infinite alternate` }}>
-            <img src={img.src} alt={img.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <span className="text-xs text-white font-light">{img.label}</span>
+    <div ref={ref} className="rounded-2xl border border-black/[0.08] bg-white overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
+      {/* MacOS-style browser bar */}
+      <div className="flex items-center gap-3 px-5 py-3 border-b border-black/[0.05] bg-[#fafaf8] shrink-0">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+        </div>
+        <div className="flex-1 h-5 bg-black/[0.05] rounded-full flex items-center px-3">
+          <span className="text-[10px] text-black/30 tracking-wide truncate">canva.com · {title}</span>
+        </div>
+        <a href={`https://canva.link/${shortId}`} target="_blank" rel="noopener noreferrer">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-black/30 hover:text-black/60 transition-colors"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+        </a>
+      </div>
+
+      {/* Canva iframe embed — lazy loaded */}
+      <div className="relative flex-1" style={{ minHeight: "260px" }}>
+        {/* Loading skeleton */}
+        {!loaded && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#fafaf8]">
+            <div className="w-12 h-12 rounded-xl bg-[#00C4CC]/10 flex items-center justify-center">
+              {/* Canva logo-ish */}
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#00C4CC]">
+                <rect width="24" height="24" rx="6" fill="currentColor" fillOpacity="0.15" />
+                <path d="M12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18C15.3137 18 18 15.3137 18 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="12" cy="12" r="2" fill="currentColor" />
+              </svg>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-black/40 font-light">Memuat presentasi Canva...</p>
+              <p className="text-xs text-black/25 mt-1">{title}</p>
             </div>
           </div>
-        ))}
+        )}
+        {inView && (
+          <iframe
+            loading="lazy"
+            onLoad={() => setLoaded(true)}
+            className="absolute inset-0 w-full h-full"
+            style={{ border: "none" }}
+            src={`https://www.canva.com/design/${designId}/view?embed`}
+            allow="fullscreen"
+            allowFullScreen
+            title={title}
+          />
+        )}
+      </div>
+
+      {/* Footer info */}
+      <div className="px-5 py-4 border-t border-black/[0.05] shrink-0">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <h3 className="text-sm font-light text-black/70">{title}</h3>
+            <p className="text-xs text-black/40 mt-1 leading-relaxed">{desc}</p>
+          </div>
+          <a
+            href={`https://canva.link/${shortId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00C4CC]/10 hover:bg-[#00C4CC]/20 transition-colors text-xs text-[#00C4CC] font-medium"
+          >
+            Lihat di Canva
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+          </a>
+        </div>
       </div>
     </div>
   )
 }
+
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
@@ -420,7 +470,7 @@ export default function PortfolioPage() {
             <BentoCard className="lg:col-span-3 flex flex-col items-center justify-center p-8 min-h-[400px]" delay={0}>
               <div className="relative w-48 h-48 lg:w-full lg:h-72 rounded-2xl overflow-hidden mb-6 border border-black/[0.07]">
                 <img
-                  src="/images/resa.jpg"
+                  src="/images/resa.png"
                   alt="Resa Swastyani"
                   className="w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-700"
                   onError={(e) => {
@@ -444,7 +494,7 @@ export default function PortfolioPage() {
             <BentoCard className="lg:col-span-5 p-8 min-h-[400px] flex flex-col justify-between" delay={80}>
               <div>
                 <div className="w-10 h-10 rounded-xl border border-black/10 flex items-center justify-center mb-5">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 </div>
                 <h3 className="text-xl font-light mb-4">Profil Profesional</h3>
                 <p className="text-sm text-black/45 leading-relaxed">
@@ -469,7 +519,7 @@ export default function PortfolioPage() {
             <BentoCard className="lg:col-span-4 p-8 min-h-[400px] flex flex-col justify-between" delay={160}>
               <div>
                 <div className="w-10 h-10 rounded-xl border border-black/10 flex items-center justify-center mb-5">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
                 </div>
                 <h3 className="text-xl font-light mb-6">Technical Skills</h3>
                 <div className="space-y-5">
@@ -507,7 +557,7 @@ export default function PortfolioPage() {
             {/* Technical */}
             <BentoCard className="col-span-12 md:col-span-8 p-8" delay={0}>
               <div className="w-10 h-10 rounded-xl border border-black/10 flex items-center justify-center mb-5">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
               </div>
               <h3 className="text-lg font-light mb-5">Kompetensi Teknis</h3>
               <div className="flex flex-wrap gap-2">
@@ -521,7 +571,7 @@ export default function PortfolioPage() {
 
             <BentoCard className="col-span-12 md:col-span-4 p-8" delay={80}>
               <div className="w-10 h-10 rounded-xl border border-black/10 flex items-center justify-center mb-5">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
               </div>
               <h3 className="text-lg font-light mb-5">Soft Skills</h3>
               <div className="space-y-3">
@@ -575,45 +625,36 @@ export default function PortfolioPage() {
               <span>Proyek Unggulan</span>
               <div className="h-px flex-1 bg-black/[0.06]" />
             </div>
+            {/* 2-col layout: left=Maharani web preview, right=Canva video embed */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Featured card — Maharani Transport website */}
+
+              {/* Maharani Transport — web UI preview */}
               <ProjectCard
                 title="Maharani Transport — Car Rental Platform"
                 category="Web App · Full Stack"
                 tech="PHP, Bootstrap, MySQL"
-                desc="Platform pemesanan dan manajemen armada penyewaan mobil yang live dan aktif beroperasi. Menampilkan katalog kendaraan, integrasi WooCommerce, dan pemesanan via WhatsApp. Dikembangkan saat internship sebagai Full Stack Developer."
+                desc="Website penyewaan mobil yang live beroperasi. Dilengkapi katalog kendaraan, WooCommerce, dan pemesanan langsung via WhatsApp. Dibangun sebagai Full Stack Developer saat internship Feb–Mar 2023."
                 link="https://maharanitransport.com"
-                image="https://maharanitransport.com/wp-content/uploads/2023/03/innova-zenix.webp"
+                image="/images/maharani-web-preview.png"
                 accent="#1e3a5f"
                 delay={0}
-                featured
               />
-              {/* Canva Design project */}
-              <ProjectCard
-                title="UI/UX Design — Canva Portfolio"
-                category="Design · Branding"
-                tech="Canva, Figma, Visual Design"
-                desc="Koleksi desain visual & branding yang dibuat menggunakan Canva — mencakup presentasi profesional, materi pelatihan AI, dan konten digital untuk berbagai kegiatan kampus dan profesional."
-                link="https://canva.link/gplywe5v4m5a5ng"
-                image="https://maharanitransport.com/wp-content/uploads/2023/03/hiace-premio.png"
-                accent="#7c3aed"
-                delay={80}
-              />
-            </div>
-          </div>
 
-          {/* ── Floating image strip — armada Maharani Transport ── */}
-          <div className="mb-8 rounded-2xl border border-black/[0.06] bg-white overflow-hidden px-4">
-            <div className="flex items-center gap-3 px-2 pt-4 pb-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] text-black/30 tracking-widest uppercase">Armada Maharani Transport · Live Preview</span>
-              <a href="https://maharanitransport.com/shop/" target="_blank" rel="noopener noreferrer"
-                className="ml-auto text-[11px] text-black/30 hover:text-black/60 transition-colors tracking-wide flex items-center gap-1">
-                Lihat semua
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
+              {/* Canva Portfolio — video embed */}
+              <div style={{
+                opacity: 1,
+                transform: "translateY(0)",
+                transition: "opacity 0.7s ease 80ms, transform 0.7s ease 80ms",
+              }}>
+                <CanvaEmbed
+                  designId="DAGplywe5v4m5a5ng"
+                  shortId="gplywe5v4m5a5ng"
+                  title="Portfolio & Project Presentation"
+                  desc="Desain visual & presentasi profesional yang mencakup proyek kampus, materi pelatihan AI untuk guru, dan konten branding — dibuat dengan Canva."
+                />
+              </div>
+
             </div>
-            <FloatingImageStrip />
           </div>
 
           {/* ── Other projects grid ── */}
@@ -799,7 +840,7 @@ export default function PortfolioPage() {
               <BentoCard className="p-8" delay={0}>
                 <div className="flex items-start gap-5">
                   <div className="w-12 h-12 rounded-xl border border-black/10 flex items-center justify-center shrink-0">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                   </div>
                   <div className="flex-1">
                     <div className="text-[11px] text-black/30 tracking-widest uppercase mb-1">2021 – 2025</div>
@@ -815,7 +856,7 @@ export default function PortfolioPage() {
               <BentoCard className="p-8" delay={80}>
                 <div className="flex items-start gap-5">
                   <div className="w-12 h-12 rounded-xl border border-black/10 flex items-center justify-center shrink-0">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                   </div>
                   <div className="flex-1">
                     <div className="text-[11px] text-black/30 tracking-widest uppercase mb-1">2018 – 2021</div>
@@ -829,7 +870,7 @@ export default function PortfolioPage() {
               <BentoCard className="p-8" delay={120}>
                 <div className="flex items-start gap-5">
                   <div className="w-12 h-12 rounded-xl border border-black/10 flex items-center justify-center shrink-0">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                   </div>
                   <div className="flex-1">
                     <div className="text-[11px] text-black/30 tracking-widest uppercase mb-1">2023 – 2024</div>
