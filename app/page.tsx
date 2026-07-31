@@ -9,6 +9,7 @@ import { RevealText } from "@/components/reveal-text"
 import { StackingAgentCards } from "@/components/stacking-agent-cards"
 import { MobileNav } from "@/components/mobile-nav"
 import { DevExSection } from "@/components/devex-section"
+import { useLang } from "@/components/lang-provider"
 
 // ─── Intersection Observer hook ──────────────────────────────────────────────
 function useInView(threshold = 0.15) {
@@ -306,7 +307,7 @@ function LocalVideoEmbed({ src, title, desc, delay = 0, isLive = false }: { src:
 
   useEffect(() => {
     if (inView && videoRef.current) {
-      videoRef.current.play().catch(() => {})
+      videoRef.current.play().catch(() => { })
     } else if (!inView && videoRef.current) {
       videoRef.current.pause()
     }
@@ -439,7 +440,7 @@ function LiveWebsiteEmbed({
             <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
           </div>
           <div className="flex-1 h-5 bg-black/[0.05] dark:bg-white/[0.05] rounded-full flex items-center px-3 gap-1.5 min-w-0">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
             <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">{displayUrl}</span>
           </div>
           <a
@@ -450,9 +451,9 @@ function LiveWebsiteEmbed({
             title="Buka website"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-              <polyline points="15 3 21 3 21 9"/>
-              <line x1="10" y1="14" x2="21" y2="3"/>
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
             </svg>
           </a>
         </div>
@@ -461,7 +462,7 @@ function LiveWebsiteEmbed({
         <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white group">
           {images && images.length > 0 ? (
             <>
-              <div 
+              <div
                 className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
                 style={{
                   opacity: inView ? 1 : 0,
@@ -473,7 +474,7 @@ function LiveWebsiteEmbed({
                   <img
                     key={i}
                     src={img}
-                    alt={`${title} - slide ${i+1}`}
+                    alt={`${title} - slide ${i + 1}`}
                     onLoad={() => setLoaded(true)}
                     className="w-full h-full shrink-0 object-cover object-top snap-center"
                   />
@@ -568,6 +569,7 @@ function LiveWebsiteEmbed({
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
+  const { t } = useLang()
   const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [heroReady, setHeroReady] = useState(false)
@@ -575,9 +577,18 @@ export default function PortfolioPage() {
   const handleIntroDone = useCallback(() => { setHeroReady(true) }, [])
 
   useEffect(() => {
-    const t = setTimeout(() => setVideoReady(true), HERO_REVEAL_MS)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setVideoReady(true), HERO_REVEAL_MS)
+    return () => clearTimeout(timer)
   }, [])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+    const subject = encodeURIComponent("Collaboration Inquiry — Portfolio")
+    const body = encodeURIComponent(`Halo Resa,\n\nSaya tertarik untuk berkolaborasi.\n\nEmail saya: ${email}\n\nSalam,`)
+    window.open(`mailto:resaarrazy@gmail.com?subject=${subject}&body=${body}`, "_blank")
+    setSubmitted(true)
+  }
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget
@@ -627,15 +638,11 @@ export default function PortfolioPage() {
                 transition: "opacity 1s cubic-bezier(0.16,1,0.3,1) 0ms, filter 1s cubic-bezier(0.16,1,0.3,1) 0ms, transform 1s cubic-bezier(0.16,1,0.3,1) 0ms",
               }}
             >
-              Resa<br />Swastyani.<br />Developer &<br />Engineer.
+              Resa<br />Swastyani.<br />Developer &<br /> Software Engineer.
             </h1>
 
             <div className="flex gap-8 sm:gap-12">
-              {[
-                { value: "~0%", label: "Error Rate" },
-                { value: "6+", label: "Proyek Selesai" },
-                { value: "3+", label: "Tahun Berpengalaman" },
-              ].map((stat, i) => (
+              {t.heroStats.map((stat, i) => (
                 <div key={i} style={{
                   opacity: heroReady ? 1 : 0,
                   filter: heroReady ? "blur(0px)" : "blur(16px)",
@@ -663,9 +670,9 @@ export default function PortfolioPage() {
         <div className="max-w-6xl mx-auto">
           <div className="mb-16">
             <PixelIcon type="platform" size={40} />
-            <div className="mt-4"><Tag>TENTANG SAYA</Tag></div>
+            <div className="mt-4"><Tag>{t.aboutTag}</Tag></div>
             <RevealText className="mt-5 text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
-              {"Dedikasi tinggi pada\nkualitas & inovasi."}
+              {t.aboutHeading}
             </RevealText>
           </div>
 
@@ -683,12 +690,12 @@ export default function PortfolioPage() {
                 />
               </div>
               <div className="text-center">
-                <div className="font-pixel text-[11px] tracking-widest text-black/40 dark:text-white/40 mb-1">WEB DEVELOPER</div>
+                <div className="font-pixel text-[11px] tracking-widest text-black/40 dark:text-white/40 mb-1">{t.aboutSubLabel}</div>
                 <h3 className="text-lg font-light">Resa Swastyani</h3>
-                <p className="text-xs text-black/35 dark:text-white/35 mt-1">Boyolali, Indonesia</p>
+                <p className="text-xs text-black/35 dark:text-white/35 mt-1">{t.aboutLocation}</p>
                 <div className="mt-4 flex items-center justify-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs text-black/40 dark:text-white/40">Available for work</span>
+                  <span className="text-xs text-black/40 dark:text-white/40">{t.aboutAvailable}</span>
                 </div>
               </div>
             </BentoCard>
@@ -699,20 +706,23 @@ export default function PortfolioPage() {
                 <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 </div>
-                <h3 className="text-xl font-light mb-4">Profil Profesional</h3>
+                <h3 className="text-xl font-light mb-4">{t.profileTitle}</h3>
                 <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed">
-                  Saya seorang profesional web developer & software engineer. Saya percaya bahwa kualitas adalah kunci utama dalam menghasilkan produk teknologi yang memuaskan pengguna. Saya memiliki pengalaman dalam merancang dan mengimplementasikan pengembangan di proyek kampus dan luar kampus yang setiap fitur yang dirilis memiliki kinerja dan keandalan yang optimal dengan tingkat eror hampir 0%.
+                  {t.profileDesc}
                 </p>
               </div>
               <div className="pt-6 border-t border-black/[0.06] dark:border-white/[0.06] space-y-2 mt-6">
-                {[
-                  { label: "Email", value: "resaarrazy@gmail.com" },
-                  { label: "Telepon", value: "+62 8570 2212 770" },
-                  { label: "Lokasi", value: "Ngesrep, Ngemplak, Boyolali 57375" },
-                ].map(item => (
+                {t.contactInfo.map(item => (
                   <div key={item.label} className="flex gap-4 text-sm">
                     <span className="text-black/30 dark:text-white/30 min-w-[60px] tracking-widest text-[11px] uppercase pt-0.5">{item.label}</span>
-                    <span className="text-black/60 dark:text-white/60 font-light">{item.value}</span>
+                    {'href' in item && item.href ? (
+                      <a href={item.href} target="_blank" rel="noopener noreferrer"
+                        className="text-black/60 dark:text-white/60 font-light hover:text-black dark:hover:text-white transition-colors underline underline-offset-2 decoration-black/20 dark:decoration-white/20">
+                        {item.value}
+                      </a>
+                    ) : (
+                      <span className="text-black/60 dark:text-white/60 font-light">{item.value}</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -724,7 +734,7 @@ export default function PortfolioPage() {
                 <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
                 </div>
-                <h3 className="text-xl font-light mb-6">Technical Skills</h3>
+                <h3 className="text-xl font-light mb-6">{t.skillsCardTitle}</h3>
                 <div className="space-y-5">
                   <SkillBar label="Next.js / React" level={88} />
                   <SkillBar label="Laravel / PHP" level={85} />
@@ -746,13 +756,13 @@ export default function PortfolioPage() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
             <div>
               <PixelIcon type="agents" size={40} />
-              <div className="mt-4"><Tag>KEY COMPETENCIES</Tag></div>
+              <div className="mt-4"><Tag>{t.skillsTag}</Tag></div>
               <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
-                {"Keahlian teknis &\nsoft skill unggulan."}
+                {t.skillsHeading}
               </RevealText>
             </div>
             <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed max-w-xs">
-              Kombinasi keahlian teknis full-stack dengan kemampuan kepemimpinan dan manajemen yang telah teruji.
+              {t.skillsDesc}
             </p>
           </div>
 
@@ -761,7 +771,7 @@ export default function PortfolioPage() {
               <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
               </div>
-              <h3 className="text-lg font-light mb-5">Kompetensi Teknis</h3>
+              <h3 className="text-lg font-light mb-5">{t.techTitle}</h3>
               <div className="flex flex-wrap gap-2">
                 {["Next.js", "React", "Laravel", "PHP", "Python", "Bootstrap", "MySQL", "Scikit-learn", "Pandas", "Streamlit", "Raspberry Pi Pico", "IoT", "REST API", "Web Server", "Machine Learning"].map(skill => (
                   <span key={skill} className="px-3 py-1.5 rounded-lg text-sm text-black/55 dark:text-white/55 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] transition-colors cursor-default">
@@ -775,7 +785,7 @@ export default function PortfolioPage() {
               <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
               </div>
-              <h3 className="text-lg font-light mb-5">Soft Skills</h3>
+              <h3 className="text-lg font-light mb-5">{t.softTitle}</h3>
               <div className="space-y-3">
                 {[
                   "Leadership & Team Management",
@@ -804,13 +814,13 @@ export default function PortfolioPage() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
             <div>
               <PixelIcon type="integrations" size={40} />
-              <div className="mt-4"><Tag>PROJECT GALLERY</Tag></div>
+              <div className="mt-4"><Tag>{t.projectTag}</Tag></div>
               <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
-                {"Karya & inovasi\nyang telah dirilis."}
+                {t.projectHeading}
               </RevealText>
             </div>
             <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed max-w-xs">
-              Proyek nyata dari berbagai industri — mulai dari platform rental mobil live, desain Canva, hingga machine learning dan IoT.
+              {t.projectDesc}
             </p>
           </div>
 
@@ -818,7 +828,7 @@ export default function PortfolioPage() {
           <div className="mb-8">
             <div className="text-[11px] text-black/25 dark:text-white/25 tracking-widest uppercase mb-6 flex items-center gap-3">
               <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
-              <span>Proyek Unggulan</span>
+              <span>{t.featuredLabel}</span>
               <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -830,8 +840,8 @@ export default function PortfolioPage() {
               />
               <LocalVideoEmbed
                 src="/video/Rupakata.mp4"
-                title="Portfolio & Project Presentation"
-                desc="Desain visual & presentasi profesional yang mencakup proyek kampus, materi pelatihan AI untuk guru, dan konten branding."
+                title="Sistem Penerbitan Buku"
+                desc="Sistem Managemen Penerbitan Buku yang terintegrasi dengan marketplace."
                 isLive={true}
               />
             </div>
@@ -840,21 +850,21 @@ export default function PortfolioPage() {
           {/* ── Proyek Lainnya — media first ── */}
           <div className="text-[11px] text-black/25 dark:text-white/25 tracking-widests uppercase mb-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
-            <span>Proyek Lainnya</span>
+            <span>{t.othersLabel}</span>
             <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* — DENGAN MEDIA (GAMBAR / VIDEO) DULU — */}
-            <LiveWebsiteEmbed 
+            <LiveWebsiteEmbed
               url="https://www.forexforbetterliving.com/"
               displayUrl="forexforbetterliving.com"
               title="Forex For Better Living"
               desc="Platform Edukasi & Konsultasi Forex Trading — Next.js, Robot Trading (EA), Indikator Canggih."
               accentColor="#167E6C"
               logoText="FBL"
-              delay={0} 
+              delay={0}
             />
-            <LiveWebsiteEmbed 
+            <LiveWebsiteEmbed
               url="https://tirtabening.sevensmarts-dev.com/"
               images={[
                 "/images/water1.png",
@@ -868,16 +878,16 @@ export default function PortfolioPage() {
               desc="Pencatatan meteran air dengan pengiriman tagihan otomatis dan notifikasi pengingat via WhatsApp API."
               accentColor="#0ea5e9"
               logoText="AIR"
-              delay={80} 
+              delay={80}
             />
-            <LiveWebsiteEmbed 
+            <LiveWebsiteEmbed
               url="https://absensielrahma.vercel.app/"
               displayUrl="absensielrahma.vercel.app"
               title="Sistem Absensi El Rahma"
               desc="Platform absensi online modern dengan fitur real-time dan rekap otomatis."
               accentColor="#0ea5e9"
               logoText="ABSEN"
-              delay={160} 
+              delay={160}
             />
             <ProjectCard
               title="AI Training Materials"
@@ -900,14 +910,14 @@ export default function PortfolioPage() {
               desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
               delay={400}
             />
-            <LiveWebsiteEmbed 
+            <LiveWebsiteEmbed
               url="https://derail-flashcard-answering.ngrok-free.dev/"
               displayUrl="derail-flashcard-answering.ngrok-free.dev"
               title="Student Graduation Prediction"
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
               accentColor="#ff4b4b"
               logoText="PRED"
-              delay={480} 
+              delay={480}
             />
           </div>
         </div>
@@ -920,86 +930,15 @@ export default function PortfolioPage() {
         <div className="max-w-6xl mx-auto">
           <div className="mb-16">
             <PixelIcon type="workflow" size={40} />
-            <div className="mt-4"><Tag>PENGALAMAN KERJA</Tag></div>
+            <div className="mt-4"><Tag>{t.expTag}</Tag></div>
             <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
-              {"Rekam jejak profesional\ndi berbagai industri."}
+              {t.expHeading}
             </RevealText>
           </div>
 
           <div className="space-y-3" onMouseMove={handleMouse}>
-            {[
-              {
-                no: "01",
-                role: "Fullstack Developer",
-                company: "PT Akademi Keuangan Nusantara",
-                period: "Desember 2025 – Sekarang",
-                type: "Full-time",
-                desc: "Sebagai Fullstack Developer, saya bertanggung jawab mengembangkan aplikasi pembelajaran atau e-learning mengenai keuangan. Saya menggunakan Next.js sebagai bahasa pemrograman utama untuk membangun antarmuka dan logika backend yang efisien.",
-                stack: ["Next.js", "React", "Node.js"],
-                delay: 0,
-              },
-              {
-                no: "02",
-                role: "Leader Programmer",
-                company: "CV Seven Smart Indonesia",
-                period: "Juli 2025 – November 2025",
-                type: "Full-time",
-                desc: "Memimpin dan mengoordinasikan tim developer dalam pengembangan aplikasi marketplace dan berbagai produk digital dengan arsitektur modern. Bertanggung jawab atas pengembangan backend menggunakan Laravel 12 dan frontend dengan Next.js.",
-                stack: ["Laravel 12", "Next.js", "MySQL"],
-                delay: 40,
-              },
-              {
-                no: "03",
-                role: "Fullstack Developer",
-                company: "PT Agile Sapta Cahaya",
-                period: "Agustus – Oktober 2025",
-                type: "Contract",
-                desc: "Mengembangkan aplikasi pencatatan meteran air yang terintegrasi dengan sistem pengiriman tagihan otomatis serta pengingat melalui WhatsApp. Menggunakan Next.js sebagai bahasa pemrograman utama.",
-                stack: ["Next.js", "WhatsApp API", "MySQL"],
-                delay: 80,
-              },
-              {
-                no: "04",
-                role: "Tim Penelitian Aplikasi Prediksi",
-                company: "STMIK El Rahma Yogyakarta",
-                period: "Februari – Juni 2025",
-                type: "Research",
-                desc: "Membuat aplikasi prediksi kelulusan mahasiswa dengan metodologi CRISP-DM, menggunakan algoritma KNN, Decision Tree, dan Naïve Bayes. Implementasi machine learning menggunakan Python (Scikit-learn, Pandas) dan Streamlit.",
-                stack: ["Python", "Scikit-learn", "Streamlit", "Pandas"],
-                delay: 120,
-              },
-              {
-                no: "05",
-                role: "Backend Developer",
-                company: "PT Dewa Nusa Utama",
-                period: "Februari – April 2025",
-                type: "Contract",
-                desc: "Bertanggung jawab untuk sistem backend website perumahan menggunakan Laravel, mencakup pengelolaan data properti, user management, dan integrasi pembayaran.",
-                stack: ["Laravel", "PHP", "MySQL"],
-                delay: 160,
-              },
-              {
-                no: "06",
-                role: "Tim Pemateri Pelatihan AI",
-                company: "LPPM STMIK El Rahma",
-                period: "September 2024",
-                type: "Teaching",
-                desc: "Kegiatan pelatihan merancang administrasi guru dengan Artificial Intelligence (AI) bagi guru-guru MGMP Bahasa Inggris Kabupaten Sleman.",
-                stack: ["AI Tools", "Workshop"],
-                delay: 200,
-              },
-              {
-                no: "07",
-                role: "Full Stack Web Developer",
-                company: "Maharani Transport",
-                period: "Februari – Maret 2023",
-                type: "Internship",
-                desc: "Mengembangkan dan memelihara situs web perusahaan, yang menawarkan layanan penyewaan mobil. Dibangun menggunakan Bootstrap, SQL, dan PHP.",
-                stack: ["PHP", "Bootstrap", "MySQL"],
-                delay: 240,
-              },
-            ].map((exp) => (
-              <BentoCard key={exp.no} className="p-6 md:p-8 flex flex-col md:flex-row gap-6" delay={exp.delay}>
+            {t.experience.map((exp, idx) => (
+              <BentoCard key={exp.no} className="p-6 md:p-8 flex flex-col md:flex-row gap-6" delay={idx * 40}>
                 <div className="shrink-0 flex flex-row md:flex-col md:items-start items-center gap-4 md:gap-0 md:w-48">
                   <span className="font-pixel text-[11px] text-black/20 dark:text-white/20 tracking-widest">{exp.no}</span>
                   <div className="md:mt-3">
@@ -1031,13 +970,13 @@ export default function PortfolioPage() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
             <div>
               <PixelIcon type="integrations" size={40} />
-              <div className="mt-4"><Tag>PENDIDIKAN & SERTIFIKASI</Tag></div>
+              <div className="mt-4"><Tag>{t.eduTag}</Tag></div>
               <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
-                {"Latar belakang akademik\n& prestasi profesional."}
+                {t.eduHeading}
               </RevealText>
             </div>
             <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed max-w-xs">
-              Wisudawati terbaik dengan berbagai sertifikasi internasional dan penghargaan nasional.
+              {t.eduDesc}
             </p>
           </div>
 
@@ -1155,16 +1094,16 @@ export default function PortfolioPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
               <PixelIcon type="agents" size={40} />
-              <div className="mt-4"><Tag>DEDIKASI TANPA KOMPROMI</Tag></div>
+              <div className="mt-4"><Tag>{t.dedicationTag}</Tag></div>
               <RevealText className="mt-5 text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
-                {"Kualitas optimal,\ntingkat error ~0%."}
+                {t.dedicationHeading}
               </RevealText>
               <p className="mt-6 text-base text-black/40 dark:text-white/40 leading-relaxed max-w-sm">
-                Setiap fitur yang saya rilis dirancang dengan standar keandalan tinggi. Pengujian menyeluruh sebelum dan sesudah deploy menjadi kebiasaan inti dalam setiap pengembangan.
+                {t.dedicationDesc}
               </p>
               <div className="mt-10 flex items-end gap-2">
                 <LiveAgentCounter />
-                <span className="text-black/30 dark:text-white/30 text-sm mb-1 tracking-wide">baris kode yang teruji</span>
+                <span className="text-black/30 dark:text-white/30 text-sm mb-1 tracking-wide">{t.linesCode}</span>
               </div>
             </div>
             <div className="relative">
@@ -1181,20 +1120,22 @@ export default function PortfolioPage() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-cta)" }} />
         <div className="relative z-10 max-w-2xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05] mb-6">
-            Mari berkolaborasi<br />bersama saya.
+            {t.ctaHeading.split("\n").map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
           </h2>
           <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed mb-10">
-            Terbuka untuk peluang kerja full-time, freelance, atau kolaborasi proyek inovatif. Hubungi saya sekarang.
+            {t.ctaDesc}
           </p>
           {!submitted ? (
-            <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true) }} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-              <input type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} required className="flex-1 bg-white dark:bg-[#1c1c1a] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-[#111] dark:text-[#ececea] placeholder:text-black/25 dark:placeholder:text-white/25 focus:outline-none focus:border-black/25 dark:focus:border-white/25 transition-colors" />
-              <button type="submit" className="px-8 py-3 bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-white transition-colors tracking-widest font-medium">HUBUNGI</button>
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+              <input type="email" placeholder={t.ctaEmailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} required className="flex-1 bg-white dark:bg-[#1c1c1a] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-[#111] dark:text-[#ececea] placeholder:text-black/25 dark:placeholder:text-white/25 focus:outline-none focus:border-black/25 dark:focus:border-white/25 transition-colors" />
+              <button type="submit" className="px-8 py-3 bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-white transition-colors tracking-widest font-medium">{t.ctaButton}</button>
             </form>
           ) : (
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-emerald-600/20 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              {"Pesan terkirim! Saya akan segera membalas."}
+              {t.ctaSuccess}
             </div>
           )}
         </div>
@@ -1206,26 +1147,30 @@ export default function PortfolioPage() {
           <span className="font-pixel text-xs tracking-[0.25em] text-black/50 dark:text-white/50">RESA SWASTYANI</span>
 
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
-            {[
-              { label: "Tentang", href: "#about" },
-              { label: "Skills", href: "#skills" },
-              { label: "Projects", href: "#projects" },
-              { label: "Pengalaman", href: "#experience" },
-              { label: "Pendidikan", href: "#education" },
-              { label: "Kontak", href: "#contact" },
-            ].map(l => (
+            {t.footerLinks.map(l => (
               <a key={l.label} href={l.href} className="text-xs text-black/35 dark:text-white/35 hover:text-black/70 dark:hover:text-white/70 transition-colors tracking-widest">{l.label}</a>
             ))}
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <a href="mailto:resaarrazy@gmail.com" className="text-xs text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60 transition-colors tracking-wide">resaarrazy@gmail.com</a>
+            <a
+              href="https://www.linkedin.com/in/resa-swastyani-a1a425366"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-black/30 dark:text-white/30 hover:text-[#0A66C2] dark:hover:text-[#0A66C2] transition-colors"
+              title="LinkedIn Resa Swastyani"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </a>
             <span className="text-xs text-black/20 dark:text-white/20">+62 8570 2212 770</span>
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-black/[0.04] dark:border-white/[0.04] flex flex-col sm:flex-row justify-between gap-2">
-          <span className="text-xs text-black/20 dark:text-white/20">© 2026 Resa Swastyani. All rights reserved.</span>
-          <span className="text-xs text-black/15 dark:text-white/15">Ngesrep, Ngemplak, Boyolali 57375</span>
+          <span className="text-xs text-black/20 dark:text-white/20">{t.footerCopy}</span>
+          <span className="text-xs text-black/15 dark:text-white/15">{t.footerLocation}</span>
         </div>
       </footer>
     </div>
