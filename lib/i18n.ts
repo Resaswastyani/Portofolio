@@ -26,8 +26,9 @@ export const translations = {
     contactInfo: [
       { label: "Email", value: "resaarrazy@gmail.com" },
       { label: "Telepon", value: "+62 8570 2212 770" },
-      { label: "Lokasi", value: "Ngesrep, Ngemplak, Boyolali 57375" },
+      { label: "Lokasi",   value: "Ngesrep, Ngemplak, Boyolali 57375" },
       { label: "LinkedIn", value: "resa-swastyani", href: "https://www.linkedin.com/in/resa-swastyani-a1a425366" },
+      { label: "GitHub",   value: "Resaswastyani", href: "https://github.com/Resaswastyani" },
     ],
     skillsCardTitle: "Technical Skills",
     skillsTag: "KEY COMPETENCIES",
@@ -146,6 +147,7 @@ export const translations = {
       { label: "Phone", value: "+62 8570 2212 770" },
       { label: "Location", value: "Ngesrep, Ngemplak, Boyolali 57375" },
       { label: "LinkedIn", value: "resa-swastyani", href: "https://www.linkedin.com/in/resa-swastyani-a1a425366" },
+      { label: "GitHub",   value: "Resaswastyani", href: "https://github.com/Resaswastyani" },
     ],
     skillsCardTitle: "Technical Skills",
     skillsTag: "KEY COMPETENCIES",
