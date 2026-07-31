@@ -586,7 +586,7 @@ export default function PortfolioPage() {
     if (!email) return
     const subject = encodeURIComponent("Collaboration Inquiry — Portfolio")
     const body = encodeURIComponent(`Halo Resa,\n\nSaya tertarik untuk berkolaborasi.\n\nEmail saya: ${email}\n\nSalam,`)
-    window.open(`mailto:resaarrazy@gmail.com?subject=${subject}&body=${body}`, "_blank")
+    window.location.href = `mailto:resaarrazy@gmail.com?subject=${subject}&body=${body}`
     setSubmitted(true)
   }
 
@@ -629,7 +629,7 @@ export default function PortfolioPage() {
         <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col lg:flex-row items-end justify-between px-6 md:px-12 pb-12 gap-8">
           <div className="flex flex-col max-w-2xl">
             <h1
-              className="text-6xl sm:text-7xl md:text-8xl font-light leading-[1.0] tracking-tight mb-10"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-[1.05] tracking-tight mb-8"
               style={{
                 fontFamily: '"IBM Plex Sans", sans-serif',
                 opacity: heroReady ? 1 : 0,
@@ -911,8 +911,8 @@ export default function PortfolioPage() {
               delay={400}
             />
             <LiveWebsiteEmbed
-              url="https://derail-flashcard-answering.ngrok-free.dev/"
-              displayUrl="derail-flashcard-answering.ngrok-free.dev"
+              images={["/images/prediksi1.png", "/images/prediksi2.png"]}
+              displayUrl="Student Graduation Prediction"
               title="Student Graduation Prediction"
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
               accentColor="#ff4b4b"

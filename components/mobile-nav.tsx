@@ -53,7 +53,9 @@ export function MobileNav() {
             <LangToggle />
             <ThemeToggle />
             <a
-              href="mailto:resaarrazy@gmail.com?subject=Hire%20Resa%20Swastyani&body=Halo%20Resa%2C%20saya%20tertarik%20untuk%20berkolaborasi%20dengan%20Anda."
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=resaarrazy@gmail.com&su=Hire%20Resa%20Swastyani&body=Halo%20Resa,%20saya%20tertarik%20untuk%20berkolaborasi%20dengan%20Anda."
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-[11px] px-4 py-2 rounded-xl border border-black/10 dark:border-white/10 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.03] dark:hover:bg-white/[0.05] transition-all duration-200 tracking-wide hidden md:block"
               style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
             >
@@ -104,7 +106,9 @@ export function MobileNav() {
             ))}
             <div className="mt-1 px-2 pb-1">
               <a
-                href="mailto:resaarrazy@gmail.com?subject=Hire%20Resa%20Swastyani&body=Halo%20Resa%2C%20saya%20tertarik%20untuk%20berkolaborasi%20dengan%20Anda."
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=resaarrazy@gmail.com&su=Hire%20Resa%20Swastyani&body=Halo%20Resa,%20saya%20tertarik%20untuk%20berkolaborasi%20dengan%20Anda."
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block w-full text-center text-[11px] px-4 py-2.5 rounded-xl border border-black/10 dark:border-white/10 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.03] dark:hover:bg-white/[0.05] transition-all duration-200 tracking-wide"
                 style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}
               >
