@@ -394,6 +394,13 @@ function LiveWebsiteEmbed({
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [loaded, setLoaded] = useState(false)
 
+  useEffect(() => {
+    if (images || image) {
+      const t = setTimeout(() => setLoaded(true), 500)
+      return () => clearTimeout(t)
+    }
+  }, [images, image])
+
   // Auto-scroll the iframe after it loads
   useEffect(() => {
     if (!loaded || !iframeRef.current) return
@@ -838,25 +845,6 @@ export default function PortfolioPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* — DENGAN MEDIA (GAMBAR / VIDEO) DULU — */}
-            <ProjectCard
-              title="AI Training Materials"
-              category="AI · Education"
-              tech="AI Tools, Workshop"
-              desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
-              link="#"
-              images={["/images/plt1 (1).jpeg", "/images/plt1 (2).jpeg"]}
-              delay={80}
-            />
-            <LocalVideoEmbed
-              src="/video/egg.mp4"
-              title="Smart Egg Incubator"
-              desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
-            />
-            <LocalVideoEmbed
-              src="/video/Maharani.mp4"
-              title="Maharani Transport App"
-              desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
-            />
             <LiveWebsiteEmbed 
               url="https://www.forexforbetterliving.com/"
               displayUrl="forexforbetterliving.com"
@@ -864,16 +852,7 @@ export default function PortfolioPage() {
               desc="Platform Edukasi & Konsultasi Forex Trading — Next.js, Robot Trading (EA), Indikator Canggih."
               accentColor="#167E6C"
               logoText="FBL"
-              delay={160} 
-            />
-            <LiveWebsiteEmbed 
-              url="https://absensielrahma.vercel.app/"
-              displayUrl="absensielrahma.vercel.app"
-              title="Sistem Absensi El Rahma"
-              desc="Platform absensi online modern dengan fitur real-time dan rekap otomatis."
-              accentColor="#0ea5e9"
-              logoText="ABSEN"
-              delay={240} 
+              delay={0} 
             />
             <LiveWebsiteEmbed 
               url="https://tirtabening.sevensmarts-dev.com/"
@@ -889,7 +868,37 @@ export default function PortfolioPage() {
               desc="Pencatatan meteran air dengan pengiriman tagihan otomatis dan notifikasi pengingat via WhatsApp API."
               accentColor="#0ea5e9"
               logoText="AIR"
-              delay={240} 
+              delay={80} 
+            />
+            <LiveWebsiteEmbed 
+              url="https://absensielrahma.vercel.app/"
+              displayUrl="absensielrahma.vercel.app"
+              title="Sistem Absensi El Rahma"
+              desc="Platform absensi online modern dengan fitur real-time dan rekap otomatis."
+              accentColor="#0ea5e9"
+              logoText="ABSEN"
+              delay={160} 
+            />
+            <ProjectCard
+              title="AI Training Materials"
+              category="AI · Education"
+              tech="AI Tools, Workshop"
+              desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
+              link="#"
+              images={["/images/plt1 (1).jpeg", "/images/plt1 (2).jpeg"]}
+              delay={240}
+            />
+            <LocalVideoEmbed
+              src="/video/egg.mp4"
+              title="Smart Egg Incubator"
+              desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
+              delay={320}
+            />
+            <LocalVideoEmbed
+              src="/video/Maharani.mp4"
+              title="Maharani Transport App"
+              desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
+              delay={400}
             />
             <LiveWebsiteEmbed 
               url="https://derail-flashcard-answering.ngrok-free.dev/"
@@ -898,7 +907,7 @@ export default function PortfolioPage() {
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
               accentColor="#ff4b4b"
               logoText="PRED"
-              delay={320} 
+              delay={480} 
             />
           </div>
         </div>
@@ -1045,6 +1054,7 @@ export default function PortfolioPage() {
                     <p className="text-sm text-black/40 dark:text-white/40">STMIK El Rahma Yogyakarta</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <span className="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-[11px] border border-amber-200/60 dark:border-amber-500/30">🏆 Wisudawati Terbaik TA 2024/2025</span>
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[11px] border border-emerald-200/60 dark:border-emerald-500/30">🎓 IPK 3.94/4.00</span>
                     </div>
                   </div>
                 </div>
