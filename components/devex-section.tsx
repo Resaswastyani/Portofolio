@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useInView } from "@/hooks/use-in-view"
 
 const STEPS = [
   {
@@ -84,32 +85,32 @@ function CodeLine({ line }: { line: (typeof STEPS)[0]["code"][0] }) {
   if (line.type === "gap") return <div className="h-3" />
   if (line.type === "comment") return <div className="text-[#9ca3af]">{line.text}</div>
   if (line.type === "output") return <div className="text-[#6b7280]">{line.text}</div>
-  if (line.type === "success") return <div className="text-[#16a34a]">{line.text}</div>
-  if (line.type === "url") return <div className="text-[#2563eb] underline">{line.text}</div>
+  if (line.type === "success") return <div className="text-[#16a34a] dark:text-[#86efac]">{line.text}</div>
+  if (line.type === "url") return <div className="text-[#2563eb] dark:text-[#93c5fd] underline">{line.text}</div>
   if (line.type === "command") return (
     <div>
-      <span className="text-[#16a34a]">$ </span>
-      <span className="text-[#111]">{line.text}</span>
+      <span className="text-[#16a34a] dark:text-[#86efac]">$ </span>
+      <span className="text-[#111] dark:text-[#e5e5e2]">{line.text}</span>
     </div>
   )
-  if (line.type === "plain") return <div className="text-[#111]">{line.text}</div>
+  if (line.type === "plain") return <div className="text-[#111] dark:text-[#e5e5e2]">{line.text}</div>
   if (line.type === "prop") return (
     <div>
-      <span className="text-[#2563eb]">{line.key}</span>
-      <span className="text-[#111]">: </span>
-      <span className="text-[#16a34a]">{line.val}</span>
-      <span className="text-[#111]">,</span>
+      <span className="text-[#2563eb] dark:text-[#93c5fd]">{line.key}</span>
+      <span className="text-[#111] dark:text-[#e5e5e2]">: </span>
+      <span className="text-[#16a34a] dark:text-[#86efac]">{line.val}</span>
+      <span className="text-[#111] dark:text-[#e5e5e2]">,</span>
     </div>
   )
   if (line.type === "keyword") return (
     <div>
-      <span className="text-[#7c3aed]">{line.text}</span>
-      <span className="text-[#111]">{line.after}</span>
-      <span className="text-[#7c3aed]">{line.keyword2}</span>
-      {line.keyword3 && <span className="text-[#7c3aed]">{line.keyword3}</span>}
-      {line.fn && <span className="text-[#b45309]">{line.fn}</span>}
-      {line.args && <span className="text-[#111]">{line.args}</span>}
-      {line.string && <span className="text-[#16a34a]">{line.string}</span>}
+      <span className="text-[#7c3aed] dark:text-[#c4b5fd]">{line.text}</span>
+      <span className="text-[#111] dark:text-[#e5e5e2]">{line.after}</span>
+      <span className="text-[#7c3aed] dark:text-[#c4b5fd]">{line.keyword2}</span>
+      {line.keyword3 && <span className="text-[#7c3aed] dark:text-[#c4b5fd]">{line.keyword3}</span>}
+      {line.fn && <span className="text-[#b45309] dark:text-[#fcd34d]">{line.fn}</span>}
+      {line.args && <span className="text-[#111] dark:text-[#e5e5e2]">{line.args}</span>}
+      {line.string && <span className="text-[#16a34a] dark:text-[#86efac]">{line.string}</span>}
     </div>
   )
   return null
@@ -118,32 +119,38 @@ function CodeLine({ line }: { line: (typeof STEPS)[0]["code"][0] }) {
 export function DevExSection() {
   const [active, setActive] = useState(0)
   const [visible, setVisible] = useState(true)
+  const [paused, setPaused] = useState(false)
+  const swapRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const { ref, inView } = useInView<HTMLElement>({ once: false })
 
-  function selectStep(i: number) {
-    if (i === active) return
+  function goTo(next: (prev: number) => number) {
     setVisible(false)
-    setTimeout(() => {
-      setActive(i)
+    clearTimeout(swapRef.current)
+    swapRef.current = setTimeout(() => {
+      setActive(next)
       setVisible(true)
     }, 180)
   }
 
-  // Auto-advance every 3s
+  function selectStep(i: number) {
+    if (i === active) return
+    setPaused(true)
+    goTo(() => i)
+  }
+
+  // Auto-advance only while on screen and until the user picks a step
   useEffect(() => {
-    const t = setInterval(() => {
-      setVisible(false)
-      setTimeout(() => {
-        setActive(prev => (prev + 1) % STEPS.length)
-        setVisible(true)
-      }, 180)
-    }, 3200)
+    if (!inView || paused) return
+    const t = setInterval(() => goTo(prev => (prev + 1) % STEPS.length), 3600)
     return () => clearInterval(t)
-  }, [])
+  }, [inView, paused])
+
+  useEffect(() => () => clearTimeout(swapRef.current), [])
 
   const step = STEPS[active]
 
   return (
-    <section id="devex" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+    <section ref={ref} id="devex" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
       <div className="max-w-6xl mx-auto">
         <div className="mb-16">
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/[0.05] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.08] text-[10px] tracking-widest text-black/40 dark:text-white/40 uppercase">
@@ -156,12 +163,13 @@ export function DevExSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
           {/* Left — 4 clickable step cards */}
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-2 lg:flex lg:flex-col gap-3">
             {STEPS.map((s, i) => (
               <button
                 key={s.num}
                 onClick={() => selectStep(i)}
-                className="flex-1 text-left rounded-2xl border transition-all duration-200 p-6 group"
+                aria-pressed={active === i}
+                className="flex-1 text-left rounded-2xl border transition-[background-color,border-color,box-shadow,transform] duration-300 p-5 md:p-6 group hover:-translate-y-0.5"
                 style={{
                   background: active === i
                     ? "rgba(128,128,128,0.08)"
@@ -198,11 +206,11 @@ export function DevExSection() {
 
           {/* Right — code panel */}
           <div
-            className="lg:col-span-2 rounded-2xl border border-black/[0.06] dark:border-white/[0.08] p-8 flex flex-col"
+            className="lg:col-span-2 rounded-2xl border border-black/[0.06] dark:border-white/[0.08] p-4 sm:p-8 flex flex-col"
             style={{
               background: "var(--bg-card)",
               boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-              minHeight: "360px",
+              minHeight: "340px",
             }}
           >
             {/* Header */}
@@ -211,8 +219,7 @@ export function DevExSection() {
                 className="text-[10px] tracking-widest uppercase text-black/30 dark:text-white/30 transition-all duration-200"
                 style={{
                   opacity: visible ? 1 : 0,
-                  filter: visible ? "blur(0px)" : "blur(4px)",
-                  transition: "opacity 200ms ease, filter 200ms ease",
+                  transition: "opacity 200ms ease",
                 }}
               >
                 {step.file}
@@ -231,14 +238,13 @@ export function DevExSection() {
             </div>
 
             {/* Code block */}
-            <div className="flex-1 rounded-xl p-6 overflow-hidden bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="flex-1 rounded-xl p-4 sm:p-6 overflow-x-auto bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.06] dark:border-white/[0.06]">
               <div
-                className="font-mono text-[12px] leading-6"
+                className="font-mono text-[11px] sm:text-[12px] leading-6 whitespace-pre"
                 style={{
                   opacity: visible ? 1 : 0,
-                  filter: visible ? "blur(0px)" : "blur(6px)",
                   transform: visible ? "translateY(0)" : "translateY(6px)",
-                  transition: "opacity 220ms cubic-bezier(0.16,1,0.3,1), filter 220ms cubic-bezier(0.16,1,0.3,1), transform 220ms cubic-bezier(0.16,1,0.3,1)",
+                  transition: "opacity 220ms cubic-bezier(0.16,1,0.3,1), transform 220ms cubic-bezier(0.16,1,0.3,1)",
                 }}
               >
                 {step.code.map((line, i) => (

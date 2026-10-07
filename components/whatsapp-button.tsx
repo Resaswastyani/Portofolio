@@ -21,12 +21,12 @@ export function WhatsAppButton() {
       rel="noopener noreferrer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="fixed bottom-6 right-6 z-[999] flex items-center gap-3 group"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[90] flex items-center gap-3 group"
       aria-label="Chat via WhatsApp"
     >
       {/* Tooltip label */}
       <span
-        className="text-[11px] tracking-wide text-white bg-[#25D366] px-3 py-1.5 rounded-full shadow-lg transition-all duration-300 whitespace-nowrap"
+        className="hidden sm:inline text-[11px] tracking-wide text-white bg-[#25D366] px-3 py-1.5 rounded-full shadow-lg transition-[opacity,transform] duration-300 whitespace-nowrap"
         style={{
           opacity: hovered ? 1 : 0,
           transform: hovered ? "translateX(0)" : "translateX(8px)",
@@ -38,7 +38,7 @@ export function WhatsAppButton() {
 
       {/* WhatsApp icon button */}
       <div
-        className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 relative"
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-[transform,box-shadow] duration-300 relative"
         style={{
           background: "#25D366",
           transform: hovered ? "scale(1.08)" : "scale(1)",

@@ -75,9 +75,10 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
-  --font-pixel: 'Courier Prime', monospace;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-pixel: var(--font-courier), monospace;
+  --font-display: var(--font-plex), var(--font-geist), sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -125,79 +126,6 @@
   }
 }
 
-/* Glitch Animation */
-@keyframes glitch-shift {
-  0%, 100% {
-    transform: translate(0);
-  }
-  33% {
-    transform: translate(-2px, 2px);
-  }
-  66% {
-    transform: translate(2px, -2px);
-  }
-}
-
-@keyframes glitch-opacity {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.glitch-layer {
-  animation: glitch-shift 5s infinite ease-in-out, glitch-opacity 3s infinite ease-in-out;
-}
-
-/* Word reveal — blur + translateY */
-@keyframes word-reveal {
-  0% {
-    opacity: 0;
-    filter: blur(24px);
-    transform: translateY(24px);
-  }
-  60% {
-    filter: blur(3px);
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0px);
-    transform: translateY(0px);
-  }
-}
-
-.word-reveal {
-  opacity: 0;
-  animation: word-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-}
-
-/* Fade up for sections */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Bento shimmer on hover */
-@keyframes shimmer {
-  0% { transform: translateX(-100%) }
-  100% { transform: translateX(200%) }
-}
-
-/* Pulse dot */
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1) }
-  50% { opacity: 0.4; transform: scale(0.8) }
-}
-
 /* Portfolio custom variables */
 :root {
   --bg-main: #F5F4F0;
@@ -219,17 +147,174 @@
   --gradient-cta: linear-gradient(to top, rgb(17,17,16) 0%, rgba(17,17,16,0.92) 18%, rgba(17,17,16,0.55) 35%, transparent 55%);
 }
 
-/* Smooth scrolling */
+/* ── Scrolling & base behaviour ─────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
 }
+body { overflow-x: clip; }
+::selection { background: rgba(99, 102, 241, 0.22); }
 
-/* Marquee animations */
+/* Intro overlay never shows for returning visitors (class set by inline script) */
+.intro-seen .intro-overlay { display: none !important; }
+
+/* Frosted nav — single, small blur layer */
+.nav-glass {
+  background: var(--bg-nav-solid);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
+}
+:root { --bg-nav-solid: rgba(245,244,240,0.72); }
+.dark { --bg-nav-solid: rgba(20,20,18,0.72); }
+
+/* ── Keyframes ──────────────────────────────────────────────────────────── */
 @keyframes marqueeLeft {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-33.333%); }
+  from { transform: translate3d(0,0,0); }
+  to   { transform: translate3d(-33.333%,0,0); }
 }
 @keyframes marqueeRight {
-  from { transform: translateX(-33.333%); }
-  to   { transform: translateX(0); }
+  from { transform: translate3d(-33.333%,0,0); }
+  to   { transform: translate3d(0,0,0); }
+}
+.marquee { will-change: transform; }
+.marquee:hover { animation-play-state: paused !important; }
+
+@keyframes rowSlideIn {
+  from { opacity: 0; transform: translate3d(0,10px,0); }
+  to   { opacity: 1; transform: translate3d(0,0,0); }
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+@keyframes agentProgress {
+  from { transform: scaleX(var(--p0, 0.2)); }
+  to   { transform: scaleX(0.99); }
+}
+
+/* Floating 3D objects in the hero */
+@keyframes float-y {
+  0%, 100% { transform: translate3d(0,0,var(--z,0)) rotate(var(--r,0deg)); }
+  50%      { transform: translate3d(0,-14px,var(--z,0)) rotate(var(--r,0deg)); }
+}
+@keyframes spin-3d {
+  from { transform: rotateX(-24deg) rotateY(0deg); }
+  to   { transform: rotateX(-24deg) rotateY(360deg); }
+}
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit, 120px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--orbit, 120px)) rotate(-360deg); }
+}
+@keyframes caret-blink {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes grid-pan {
+  from { background-position: 0 0; }
+  to   { background-position: 0 48px; }
+}
+@keyframes scroll-cue {
+  0%   { transform: translate3d(0,0,0); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translate3d(0,12px,0); opacity: 0; }
+}
+
+/* ── 3D cube (pure CSS) ─────────────────────────────────────────────────── */
+.cube {
+  --s: 120px;
+  position: relative;
+  width: var(--s);
+  height: var(--s);
+  transform-style: preserve-3d;
+  animation: spin-3d 18s linear infinite;
+}
+.cube > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: calc(var(--s) * 0.13);
+  letter-spacing: 0.08em;
+  color: rgba(17,17,17,0.6);
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(17,17,17,0.12);
+  border-radius: 14px;
+  box-shadow: inset 0 0 30px rgba(99,102,241,0.12);
+  backface-visibility: visible;
+}
+.dark .cube > span {
+  color: rgba(236,236,234,0.7);
+  background: rgba(28,28,26,0.6);
+  border-color: rgba(255,255,255,0.12);
+}
+.cube > span:nth-child(1) { transform: rotateY(0deg)   translateZ(calc(var(--s) / 2)); }
+.cube > span:nth-child(2) { transform: rotateY(90deg)  translateZ(calc(var(--s) / 2)); }
+.cube > span:nth-child(3) { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.cube > span:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.cube > span:nth-child(5) { transform: rotateX(90deg)  translateZ(calc(var(--s) / 2)); }
+.cube > span:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+
+/* Perspective grid floor behind sections */
+.grid-floor {
+  background-image:
+    linear-gradient(to right, rgba(17,17,17,0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17,17,17,0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: perspective(600px) rotateX(62deg);
+  transform-origin: 50% 0%;
+  mask-image: linear-gradient(to bottom, transparent, black 30%, black 60%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 60%, transparent);
+  animation: grid-pan 4s linear infinite;
+}
+.dark .grid-floor {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px);
+}
+
+/* 3D reveal used by cards */
+.reveal-3d {
+  opacity: 0;
+  transform: perspective(1000px) translate3d(0, 36px, 0) rotateX(10deg);
+  transform-origin: 50% 100%;
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  transition-delay: var(--d, 0ms);
+}
+.reveal-3d.is-in {
+  opacity: 1;
+  transform: perspective(1000px) translate3d(0, 0, 0) rotateX(0deg);
+}
+
+/* Spotlight that follows the pointer inside cards */
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(99,102,241,0.08), transparent 60%);
+  z-index: 0;
+}
+.spotlight:hover::before { opacity: 1; }
+.dark .spotlight::before {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(129,140,248,0.10), transparent 60%);
+}
+
+/* Hide scrollbars for horizontal galleries but keep them scrollable */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ── Respect reduced motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal-3d { opacity: 1; transform: none; }
 }

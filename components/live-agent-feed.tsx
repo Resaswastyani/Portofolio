@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
+import { useInView } from "@/hooks/use-in-view"
 
 const AGENT_NAMES = [
   "analyst-7f2a", "executor-3b1c", "monitor-9d4e", "researcher-2c8f",
@@ -58,27 +59,17 @@ function randomRow(key: number): AgentRow {
   }
 }
 
-// Animated progress bar that slowly ticks forward
+// Progress bar that creeps forward — pure CSS transform, no per-frame React renders
 function ProgressBar({ initial }: { initial: number }) {
-  const [pct, setPct] = useState(initial)
-  const rafRef = useRef<number>(0)
-  const pctRef = useRef(initial)
-
-  useEffect(() => {
-    const tick = () => {
-      pctRef.current = Math.min(99, pctRef.current + 0.015)
-      setPct(Math.round(pctRef.current))
-      rafRef.current = requestAnimationFrame(tick)
-    }
-    rafRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [])
-
   return (
-    <div className="w-full h-[2px] rounded-full bg-black/10 dark:bg-white/10">
-      <div 
-        className="h-full rounded-full bg-black/35 dark:bg-white/40 transition-all duration-500 ease-linear"
-        style={{ width: `${pct}%` }} 
+    <div className="w-full h-[2px] rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+      <div
+        className="h-full w-full rounded-full bg-black/35 dark:bg-white/40 origin-left"
+        style={{
+          transform: `scaleX(${initial / 100})`,
+          animation: "agentProgress 40s linear forwards",
+          ["--p0" as string]: initial / 100,
+        }}
       />
     </div>
   )
@@ -96,27 +87,29 @@ const SEED_ROWS: AgentRow[] = [
 
 export function LiveAgentFeed() {
   const [rows, setRows] = useState<AgentRow[]>(SEED_ROWS)
-  const [mounted, setMounted] = useState(false)
   const keyRef = useRef(100)
+  const { ref, inView } = useInView({ once: false, rootMargin: "100px" })
 
   useEffect(() => {
-    // Hydrate with random data only after client mount
-    setMounted(true)
     setRows(Array.from({ length: 6 }, (_, i) => randomRow(i)))
+  }, [])
 
+  // Only tick while the feed is on screen
+  useEffect(() => {
+    if (!inView) return
     const t = setInterval(() => {
       keyRef.current++
       setRows(prev => [...prev.slice(1), randomRow(keyRef.current)])
     }, 2800)
     return () => clearInterval(t)
-  }, [])
+  }, [inView])
 
   return (
-    <div className="border border-black/10 dark:border-white/10 rounded-2xl overflow-hidden bg-white/70 dark:bg-[#1c1c1a]/70">
+    <div ref={ref} className="border border-black/10 dark:border-white/10 rounded-2xl overflow-hidden bg-white/80 dark:bg-[#1c1c1a]/80 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.25)]">
       {/* Table header */}
-      <div className="grid grid-cols-[80px_1fr_80px_70px] px-4 py-2 border-b border-black/[0.06] dark:border-white/[0.06] bg-black/[0.03] dark:bg-white/[0.03]">
+      <div className="grid grid-cols-[88px_1fr_64px] sm:grid-cols-[96px_1fr_72px_72px] px-4 py-2.5 border-b border-black/[0.06] dark:border-white/[0.06] bg-black/[0.03] dark:bg-white/[0.03] gap-2">
         {["AGENT", "TASK", "REGION", "STATUS"].map(h => (
-          <span key={h} className="text-[8px] tracking-[0.16em] text-black/30 dark:text-white/30 font-mono">{h}</span>
+          <span key={h} className={`text-[9px] tracking-[0.16em] text-black/35 dark:text-white/35 font-mono ${h === "REGION" ? "hidden sm:block" : ""}`}>{h}</span>
         ))}
       </div>
 
@@ -125,70 +118,59 @@ export function LiveAgentFeed() {
         {rows.map((row, i) => (
           <div
             key={row.key}
-            className="grid grid-cols-[80px_1fr_80px_70px] px-4 py-2.5 border-b border-black/[0.04] dark:border-white/[0.04] gap-2 items-center"
+            className="grid grid-cols-[88px_1fr_64px] sm:grid-cols-[96px_1fr_72px_72px] px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.04] gap-2 items-center"
             style={{
               animation: i === rows.length - 1 ? "rowSlideIn 0.4s cubic-bezier(0.16,1,0.3,1) both" : "none",
             }}
           >
             {/* Agent */}
-            <div>
-              <div className="text-[9px] font-mono text-black/65 dark:text-white/65 mb-px">{row.name}</div>
-              <div className="text-[7.5px] font-mono text-black/25 dark:text-white/25">#{row.id}</div>
+            <div className="min-w-0">
+              <div className="text-[10px] font-mono text-black/65 dark:text-white/65 mb-px truncate">{row.name}</div>
+              <div className="text-[8.5px] font-mono text-black/30 dark:text-white/30">#{row.id}</div>
             </div>
 
             {/* Task + progress */}
             <div className="min-w-0">
-              <div className="text-[9px] text-black/50 dark:text-white/50 leading-[1.35] mb-[5px] overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="text-[10px] text-black/55 dark:text-white/55 leading-[1.35] mb-[5px] truncate">
                 {row.task}
               </div>
               <ProgressBar initial={row.progress} />
             </div>
 
             {/* Region */}
-            <div className="text-[8px] font-mono text-black/30 dark:text-white/30">{row.region}</div>
+            <div className="hidden sm:block text-[9px] font-mono text-black/35 dark:text-white/35">{row.region}</div>
 
             {/* Status */}
             <div className="flex items-center gap-[5px]">
-              <span className="w-[5px] h-[5px] rounded-full shrink-0" style={{
+              <span className="w-[6px] h-[6px] rounded-full shrink-0" style={{
                 background: row.status.color,
                 boxShadow: row.status.label === "running" ? `0 0 6px ${row.status.color}` : "none",
                 animation: row.status.label === "running" ? "statusPulse 2s ease-in-out infinite" : "none",
               }} />
-              <span className="text-[8px] font-mono text-black/35 dark:text-white/35">{row.status.label}</span>
+              <span className="text-[9px] font-mono text-black/40 dark:text-white/40">{row.status.label}</span>
             </div>
           </div>
         ))}
       </div>
-
-      <style>{`
-        @keyframes rowSlideIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes statusPulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.4; }
-        }
-      `}</style>
     </div>
   )
 }
 
 export function LiveAgentCounter() {
   const [count, setCount] = useState(3847)
-  const [mounted, setMounted] = useState(false)
+  const { ref, inView } = useInView<HTMLSpanElement>({ once: false })
 
   useEffect(() => {
-    setMounted(true)
+    if (!inView) return
     const t = setInterval(() => {
       setCount(v => v + Math.floor(Math.random() * 3 - 1))
     }, 1200)
     return () => clearInterval(t)
-  }, [])
+  }, [inView])
 
   return (
-    <span className="font-mono text-[clamp(3rem,6vw,5rem)] font-light text-black/85 dark:text-white/85 leading-none tracking-[-0.02em] transition-colors duration-300">
-      {mounted ? count.toLocaleString("en-US") : "3,847"}
+    <span ref={ref} className="font-mono tabular-nums text-[clamp(3rem,6vw,5rem)] font-light text-black/85 dark:text-white/85 leading-none tracking-[-0.02em]">
+      {count.toLocaleString("en-US")}
     </span>
   )
 }

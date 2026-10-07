@@ -7,7 +7,7 @@ export function LangToggle() {
   return (
     <button
       onClick={() => setLang(lang === "id" ? "en" : "id")}
-      className="flex items-center gap-0.5 h-7 rounded-lg border border-black/10 dark:border-white/10 overflow-hidden text-[10px] font-medium tracking-widest hover:border-black/20 dark:hover:border-white/20 transition-all duration-200"
+      className="flex items-center gap-0.5 h-8 rounded-lg border border-black/10 dark:border-white/10 overflow-hidden text-[10px] font-medium tracking-widest hover:border-black/20 dark:hover:border-white/20 transition-all duration-200"
       title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
       aria-label="Toggle language"
     >

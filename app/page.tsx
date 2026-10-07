@@ -1,571 +1,46 @@
 "use client"
 
-import React, { useRef, useEffect, useState, useCallback } from "react"
-import { motion, useTransform, useSpring, useMotionValue } from "framer-motion"
-import { IntroAnimation, HERO_REVEAL_MS } from "@/components/intro-animation"
+import React, { useEffect, useState, useCallback } from "react"
+import { IntroAnimation } from "@/components/intro-animation"
 import { PixelIcon } from "@/components/pixel-icon"
 import { LiveAgentFeed, LiveAgentCounter } from "@/components/live-agent-feed"
 import { RevealText } from "@/components/reveal-text"
-import { StackingAgentCards } from "@/components/stacking-agent-cards"
 import { MobileNav } from "@/components/mobile-nav"
 import { DevExSection } from "@/components/devex-section"
 import { useLang } from "@/components/lang-provider"
+import { useInView } from "@/hooks/use-in-view"
+import {
+  BentoCard, Tag, SkillBar, ProjectCard, LocalVideoEmbed, LiveWebsiteEmbed,
+  HeroScene, RoleTicker,
+} from "@/components/portfolio-ui"
 
-// ─── Intersection Observer hook ──────────────────────────────────────────────
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
+const HERO_VIDEO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
+
+// ─── Hero background video — paused while scrolled away ──────────────────────
+function HeroVideo({ ready }: { ready: boolean }) {
+  const { ref, inView } = useInView<HTMLVideoElement>({ once: false, threshold: 0, rootMargin: "0px" })
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true) }, { threshold })
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [threshold])
-  return { ref, inView }
-}
-
-// ─── 3D MOCKUP COMPONENT ─────────────────────────────────────────────────────────
-function TiltMockup() {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["12deg", "-12deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-12deg", "12deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => { x.set(0); y.set(0); };
-
+    const v = ref.current
+    if (!v) return
+    if (inView) v.play().catch(() => { })
+    else v.pause()
+  }, [inView, ref])
   return (
-    <motion.div
+    <video
       ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: "1000px" }}
-      className="relative w-full h-full min-h-[320px] flex items-center justify-center cursor-pointer select-none"
-    >
-      {/* Desktop Mockup */}
-      <motion.div
-        className="absolute w-[340px] h-[220px] sm:w-[420px] sm:h-[270px] bg-white dark:bg-[#1c1c1a] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-        style={{ transform: "translateZ(30px)", boxShadow: "0 40px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)" }}
-      >
-        {/* MacOS bar */}
-        <div className="h-6 w-full bg-[#f0eeea] dark:bg-[#2a2a28] border-b border-black/[0.05] dark:border-white/[0.05] flex items-center px-3 gap-1.5 shrink-0">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-          <div className="mx-auto w-36 h-3.5 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
-        </div>
-        {/* Screen content */}
-        <div className="flex-1 bg-[#fafaf8] dark:bg-[#1a1a18] p-4 flex gap-3 overflow-hidden">
-          {/* Sidebar */}
-          <div className="w-1/4 flex flex-col gap-2 shrink-0">
-            <div className="h-2.5 bg-black/10 dark:bg-white/10 rounded-full w-3/4" />
-            <div className="h-2.5 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
-            <div className="h-2.5 bg-black/[0.06] dark:bg-white/[0.06] rounded-full w-2/3" />
-            <div className="h-2.5 bg-black/[0.06] dark:bg-white/[0.06] rounded-full" />
-            <div className="h-2.5 bg-indigo-400/30 rounded-full w-5/6 mt-2" />
-          </div>
-          {/* Main area */}
-          <div className="flex-1 flex flex-col gap-2">
-            <div className="h-3 bg-black/10 dark:bg-white/10 rounded-full w-1/2" />
-            <div className="h-2 bg-black/[0.06] dark:bg-white/[0.06] rounded-full w-3/4" />
-            <div className="h-2 bg-black/[0.06] dark:bg-white/[0.06] rounded-full w-2/3" />
-            <div className="mt-2 h-14 bg-indigo-400/10 rounded-lg border border-indigo-400/10" />
-            <div className="h-2 bg-black/[0.06] dark:bg-white/[0.06] rounded-full w-5/6" />
-            <div className="h-2 bg-black/[0.06] dark:bg-white/[0.06] rounded-full w-1/2" />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* iPhone 13 Mockup */}
-      <motion.div
-        className="absolute right-[2%] bottom-[2%] sm:right-[5%] sm:bottom-[5%] w-[95px] h-[195px] sm:w-[115px] sm:h-[235px] bg-[#f5f4f0] dark:bg-[#2a2a28] rounded-[2rem] overflow-hidden flex flex-col border border-black/[0.08] dark:border-white/[0.08]"
-        style={{ transform: "translateZ(90px)", boxShadow: "0 30px 60px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.6)" }}
-      >
-        {/* Side buttons illusion */}
-        <div className="absolute -right-[3px] top-[40px] w-[3px] h-[30px] bg-black/15 rounded-l-sm" />
-        <div className="absolute -left-[3px] top-[35px] w-[3px] h-[20px] bg-black/15 rounded-r-sm" />
-        <div className="absolute -left-[3px] top-[60px] w-[3px] h-[20px] bg-black/15 rounded-r-sm" />
-        {/* Notch */}
-        <div className="absolute top-0 inset-x-0 h-5 bg-[#1a1a1a] rounded-b-xl w-[38%] mx-auto z-10 flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#333]" />
-        </div>
-        {/* Screen */}
-        <div className="w-full h-full bg-[#fafaf8] dark:bg-[#1a1a18] flex flex-col p-2 pt-7 gap-1.5 relative overflow-hidden">
-          <div className="h-8 w-full bg-indigo-500/10 rounded-xl border border-indigo-500/10 flex items-center px-2 gap-1">
-            <div className="w-3 h-3 rounded-full bg-indigo-400/30" />
-            <div className="h-1.5 bg-black/10 dark:bg-white/10 rounded-full flex-1" />
-          </div>
-          <div className="h-7 w-full bg-black/[0.04] dark:bg-white/[0.04] rounded-lg border border-black/[0.04] dark:border-white/[0.04]" />
-          <div className="h-7 w-full bg-black/[0.04] dark:bg-white/[0.04] rounded-lg border border-black/[0.04] dark:border-white/[0.04]" />
-          <div className="h-7 w-full bg-black/[0.04] dark:bg-white/[0.04] rounded-lg border border-black/[0.04] dark:border-white/[0.04]" />
-          {/* Home indicator */}
-          <div className="absolute bottom-1.5 inset-x-0 flex justify-center">
-            <div className="w-10 h-1 bg-black/20 dark:bg-white/20 rounded-full" />
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ─── Animated counter ────────────────────────────────────────────────────────
-function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
-  const [count, setCount] = useState(0)
-  const { ref, inView } = useInView()
-  useEffect(() => {
-    if (!inView) return
-    let start = 0
-    const duration = 1800
-    const step = 16
-    const increment = end / (duration / step)
-    const timer = setInterval(() => {
-      start += increment
-      if (start >= end) { setCount(end); clearInterval(timer) }
-      else setCount(Math.floor(start))
-    }, step)
-    return () => clearInterval(timer)
-  }, [inView, end])
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>
-}
-
-// ─── Bento card ──────────────────────────────────────────────────────────────
-function BentoCard({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const { ref, inView } = useInView(0.1)
-  return (
-    <div
-      ref={ref}
-      className={`group relative rounded-2xl border border-black/[0.07] dark:border-white/[0.07] bg-white dark:bg-[#1c1c1a] overflow-hidden transition-all duration-700 hover:border-black/[0.15] dark:hover:border-white/[0.15] hover:bg-[#fafaf8] dark:hover:bg-[#222220] ${className}`}
+      autoPlay loop muted playsInline
+      preload="auto"
+      aria-hidden="true"
+      className="absolute inset-0 w-full h-full object-cover z-0"
+      src={HERO_VIDEO}
       style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(28px)",
-        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms, border-color 0.3s ease, background-color 0.3s ease`,
+        transform: ready ? "scale(1.04)" : "scale(0.9)",
+        transition: "transform 1.8s cubic-bezier(0.16, 1, 0.3, 1)",
+        willChange: "transform",
       }}
-    >
-      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(128,128,128,0.05), transparent 60%)" }}
-      />
-      {children}
-    </div>
+    />
   )
 }
-
-// ─── Pill tag ─────────────────────────────────────────────────────────────────
-function Tag({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] tracking-widest font-sans text-black/40 dark:text-white/40 bg-black/[0.04] dark:bg-white/[0.06]">
-      {children}
-    </span>
-  )
-}
-
-// ─── Skill bar ────────────────────────────────────────────────────────────────
-function SkillBar({ label, level }: { label: string; level: number }) {
-  const { ref, inView } = useInView()
-  return (
-    <div ref={ref} className="space-y-1.5">
-      <div className="flex justify-between text-xs text-black/40 dark:text-white/40">
-        <span>{label}</span>
-        <span>{level}%</span>
-      </div>
-      <div className="h-1 bg-black/[0.06] dark:bg-white/[0.08] rounded-full overflow-hidden">
-        <div
-          className="h-full bg-black/25 dark:bg-white/30 rounded-full"
-          style={{
-            width: inView ? `${level}%` : "0%",
-            transition: "width 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s",
-          }}
-        />
-      </div>
-    </div>
-  )
-}
-
-// ─── 3D Project Card ─────────────────────────────────────────────────────────
-function ProjectCard({
-  title, category, tech, desc, link, image, images, accent = "#111", delay = 0, featured = false, isLive = false
-}: {
-  title: string; category: string; tech: string; desc: string; link: string;
-  image?: string; images?: string[]; accent?: string; delay?: number; featured?: boolean; isLive?: boolean
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const mouseXSpring = useSpring(x, { stiffness: 200, damping: 25 })
-  const mouseYSpring = useSpring(y, { stiffness: 200, damping: 25 })
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"])
-  const { ref: inRef, inView } = useInView(0.1)
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    x.set((e.clientX - rect.left) / rect.width - 0.5)
-    y.set((e.clientY - rect.top) / rect.height - 0.5)
-  }
-  const handleMouseLeave = () => { x.set(0); y.set(0) }
-
-  return (
-    <div ref={inRef} className={featured ? "md:col-span-2" : ""} style={{
-      opacity: inView ? 1 : 0,
-      transform: inView ? "translateY(0)" : "translateY(32px)",
-      transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
-    }}>
-      <motion.div
-        ref={ref}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: "1000px" }}
-        className="group relative rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden cursor-pointer transition-all duration-300 hover:border-black/20 dark:hover:border-white/20 hover:shadow-2xl h-full"
-      >
-        {/* Shimmer overlay */}
-        <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"
-          style={{ background: "radial-gradient(600px circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,255,255,0.06), transparent 50%)" }}
-        />
-
-        {/* Image area */}
-        {(image || images) && (
-          <div className="relative overflow-hidden" style={{ height: featured ? "280px" : "200px" }}>
-            {images ? (
-              <div className="flex w-full h-full">
-                {images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`${title} ${i}`}
-                    className="flex-1 h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    style={{ transform: "translateZ(20px)" }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <img
-                src={image}
-                alt={title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                style={{ transform: "translateZ(20px)" }}
-              />
-            )}
-            {/* Gradient overlay on image */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 50%, var(--bg-card) 100%)" }} />
-            {/* Floating badge */}
-            {isLive && (
-              <div className="absolute top-3 right-3" style={{ transform: "translateZ(40px)" }}>
-                <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md"
-                  style={{ background: accent + "cc" }}>
-                  LIVE
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Content */}
-        <div className="p-6 flex flex-col" style={{ transform: "translateZ(10px)" }}>
-          <div className="flex justify-between items-start mb-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] tracking-widest font-sans text-black/40 dark:text-white/40 bg-black/[0.04] dark:bg-white/[0.06]">
-              {category}
-            </span>
-            <a href={link} target="_blank" rel="noopener noreferrer"
-              className="w-8 h-8 rounded-full bg-black/[0.04] dark:bg-white/[0.06] flex items-center justify-center text-black/40 dark:text-white/40 hover:bg-black/[0.08] dark:hover:bg-white/[0.1] hover:text-black dark:hover:text-white transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-            </a>
-          </div>
-          <h3 className="text-xl font-light mb-2">{title}</h3>
-          <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed mb-5 flex-1">{desc}</p>
-          <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
-            <span className="text-xs text-black/40 dark:text-white/40 tracking-wide">{tech}</span>
-            <div className="flex gap-1">
-              {tech.split(",").slice(0, 3).map((t, i) => (
-                <div key={i} className="w-1.5 h-1.5 rounded-full bg-black/15 dark:bg-white/20" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
-// ─── Local Video Embed ─────────────────────────────────────────────────────────
-function LocalVideoEmbed({ src, title, desc, delay = 0, isLive = false }: { src: string; title: string; desc: string; delay?: number; isLive?: boolean }) {
-  const { ref: inRef, inView } = useInView(0.15)
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    if (inView && videoRef.current) {
-      videoRef.current.play().catch(() => { })
-    } else if (!inView && videoRef.current) {
-      videoRef.current.pause()
-    }
-  }, [inView])
-
-  return (
-    <div ref={inRef} className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col"
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(32px)",
-        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
-      }}
-    >
-      {/* MacOS-style browser bar */}
-      <div className="flex items-center gap-3 px-5 py-3 border-b border-black/[0.05] dark:border-white/[0.05] bg-[#fafaf8] dark:bg-[#222220] shrink-0">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-        </div>
-        <div className="flex-1 h-5 bg-black/[0.05] dark:bg-white/[0.05] rounded-full flex items-center px-3">
-          <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">{title}</span>
-        </div>
-      </div>
-
-      {/* Local Video Player */}
-      <div className="relative flex-1 bg-black/5 dark:bg-black/30 flex items-center justify-center overflow-hidden min-h-[220px]">
-        <video
-          ref={videoRef}
-          controls
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          className="absolute inset-0 w-full h-full object-cover"
-          src={src}
-          style={{ opacity: inView ? 1 : 0, transition: "opacity 0.7s ease" }}
-        />
-        {isLive && (
-          <div className="absolute top-3 right-3 z-10">
-            <div className="px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white backdrop-blur-md bg-black/40 border border-white/10">
-              LIVE
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Footer info */}
-      <div className="px-5 py-4 border-t border-black/[0.05] dark:border-white/[0.05] shrink-0">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <h3 className="text-sm font-light text-black/70 dark:text-white/70">{title}</h3>
-            <p className="text-xs text-black/40 dark:text-white/40 mt-1 leading-relaxed">{desc}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
-// ─── Live Website Iframe Embed ───────────────────────────────────────────────
-function LiveWebsiteEmbed({
-  url,
-  image,
-  images,
-  displayUrl,
-  title,
-  desc,
-  accentColor = "#167E6C",
-  logoText = "WEB",
-  delay = 0,
-}: {
-  url?: string;
-  image?: string;
-  images?: string[];
-  displayUrl: string;
-  title: string;
-  desc: string;
-  accentColor?: string;
-  logoText?: string;
-  delay?: number;
-}) {
-  const { ref: inRef, inView } = useInView(0.1)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    if (images || image) {
-      const t = setTimeout(() => setLoaded(true), 500)
-      return () => clearTimeout(t)
-    }
-  }, [images, image])
-
-  // Auto-scroll the iframe after it loads
-  useEffect(() => {
-    if (!loaded || !iframeRef.current) return
-    let pos = 0
-    const tick = () => {
-      try {
-        const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document
-        if (doc && doc.body) {
-          pos += 1.2
-          const max = doc.body.scrollHeight - (doc.documentElement?.clientHeight || 600)
-          if (pos > max) pos = 0
-          doc.documentElement.scrollTop = pos
-        }
-      } catch { /* cross-origin: scrolling blocked, just show the page */ }
-    }
-    const interval = setInterval(tick, 30)
-    return () => clearInterval(interval)
-  }, [loaded])
-
-  return (
-    <div
-      ref={inRef}
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(32px)",
-        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
-      }}
-    >
-      <div className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
-
-        {/* MacOS-style browser bar */}
-        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-black/[0.05] dark:border-white/[0.05] bg-[#fafaf8] dark:bg-[#222220] shrink-0">
-          <div className="flex gap-1.5 shrink-0">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
-            <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-          </div>
-          <div className="flex-1 h-5 bg-black/[0.05] dark:bg-white/[0.05] rounded-full flex items-center px-3 gap-1.5 min-w-0">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
-            <span className="text-[10px] text-black/30 dark:text-white/30 tracking-wide truncate">{displayUrl}</span>
-          </div>
-          <a
-            href={url || image || (images && images[0]) || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 w-6 h-6 flex items-center justify-center text-black/30 dark:text-white/30 hover:text-black dark:hover:text-white transition-colors"
-            title="Buka website"
-          >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-          </a>
-        </div>
-
-        {/* Iframe container — scaled to fit */}
-        <div className="relative flex-1 overflow-hidden min-h-[220px] bg-white group">
-          {images && images.length > 0 ? (
-            <>
-              <div
-                className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
-                style={{
-                  opacity: inView ? 1 : 0,
-                  transition: "opacity 0.7s ease",
-                  scrollBehavior: "smooth"
-                }}
-              >
-                {images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`${title} - slide ${i + 1}`}
-                    onLoad={() => setLoaded(true)}
-                    className="w-full h-full shrink-0 object-cover object-top snap-center"
-                  />
-                ))}
-              </div>
-              {/* Optional scroll hint */}
-              {images.length > 1 && (
-                <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-8 h-8 rounded-full bg-black/20 backdrop-blur flex items-center justify-center text-white/70">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                  </div>
-                </div>
-              )}
-            </>
-          ) : image ? (
-            <img
-              src={image}
-              alt={title}
-              onLoad={() => setLoaded(true)}
-              className="absolute inset-0 w-full h-full object-cover object-top"
-              style={{
-                opacity: loaded && inView ? 1 : 0,
-                transition: "opacity 0.7s ease",
-              }}
-            />
-          ) : url ? (
-            <iframe
-              ref={iframeRef}
-              src={url}
-              title={title}
-              onLoad={() => setLoaded(true)}
-              scrolling="no"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "400%",
-                height: "800px",
-                border: "none",
-                transformOrigin: "top left",
-                transform: "scale(0.25)",
-                pointerEvents: "none",
-                display: "block",
-                opacity: loaded && inView ? 1 : 0,
-                transition: "opacity 0.7s ease",
-              }}
-            />
-          ) : null}
-
-          {/* LIVE badge */}
-          <div className="absolute bottom-2 right-2 z-10">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-medium text-white tracking-wide"
-              style={{ background: accentColor }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse shrink-0" />
-              LIVE WEBSITE
-            </div>
-          </div>
-
-          {/* Loading skeleton */}
-          {!loaded && (
-            <div className="absolute inset-0 bg-white flex items-center justify-center z-0">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center">
-                  <span className="text-[10px] font-black" style={{ color: accentColor }}>{logoText}</span>
-                </div>
-                <div className="text-[10px] text-black/30 animate-pulse">Memuat website...</div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer info */}
-        <div className="px-5 py-3.5 border-t border-black/[0.05] dark:border-white/[0.05] shrink-0">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-light text-black/70 dark:text-white/70">{title}</h3>
-            <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${accentColor}15`, color: accentColor }}>Live</span>
-          </div>
-          <p className="text-xs text-black/40 dark:text-white/40 mt-1 leading-relaxed">
-            {desc}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
-
-
-
-
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
@@ -573,13 +48,7 @@ export default function PortfolioPage() {
   const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [heroReady, setHeroReady] = useState(false)
-  const [videoReady, setVideoReady] = useState(false)
   const handleIntroDone = useCallback(() => { setHeroReady(true) }, [])
-
-  useEffect(() => {
-    const timer = setTimeout(() => setVideoReady(true), HERO_REVEAL_MS)
-    return () => clearTimeout(timer)
-  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -590,15 +59,15 @@ export default function PortfolioPage() {
     setSubmitted(true)
   }
 
-  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget
-    const rect = el.getBoundingClientRect()
-    el.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`)
-    el.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`)
-  }
+  // Shared entrance style for hero elements (opacity + transform only)
+  const heroIn = (delay: number): React.CSSProperties => ({
+    opacity: heroReady ? 1 : 0,
+    transform: heroReady ? "translate3d(0,0,0)" : "translate3d(0,28px,0)",
+    transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+  })
 
   return (
-    <div className="bg-[#F5F4F0] dark:bg-[#111110] text-[#111] dark:text-[#ececea] min-h-screen font-sans antialiased transition-colors duration-300">
+    <div id="top" className="bg-[#F5F4F0] dark:bg-[#111110] text-[#111] dark:text-[#ececea] min-h-screen font-sans antialiased">
 
       {/* ── INTRO ANIMATION ───────────────────────────────────────────────── */}
       <IntroAnimation onDone={handleIntroDone} />
@@ -606,84 +75,121 @@ export default function PortfolioPage() {
       {/* ── STICKY NAV ────────────────────────────────────────────────────── */}
       <MobileNav />
 
+      <main>
       {/* ══════════════════════════════════════════════════════════════════════
           HERO SECTION
           ══════════════════════════════════════════════════════════════════════ */}
-      <section className="relative h-screen overflow-hidden">
-        <video
-          autoPlay loop muted playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
-          style={{ transform: videoReady ? "scale(1.05)" : "scale(0.85)", transition: "transform 2s cubic-bezier(0.16, 1, 0.3, 1)" }}
-        />
+      <section id="home" className="relative min-h-[100svh] overflow-hidden flex flex-col">
+        <HeroVideo ready={heroReady} />
 
-        {/* Gradients & blur */}
-        <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "65%", background: "var(--gradient-main)" }} />
-        <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "20%", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", maskImage: "linear-gradient(to top, black 0%, transparent 100%)", WebkitMaskImage: "linear-gradient(to top, black 0%, transparent 100%)" }} />
-        <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "38%", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", maskImage: "linear-gradient(to top, black 0%, transparent 100%)", WebkitMaskImage: "linear-gradient(to top, black 0%, transparent 100%)" }} />
-        <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "55%", backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)", maskImage: "linear-gradient(to top, black 0%, transparent 100%)", WebkitMaskImage: "linear-gradient(to top, black 0%, transparent 100%)" }} />
+        {/* Single gradient fade (replaces stacked backdrop blurs — much cheaper to scroll over) */}
+        <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "75%", background: "var(--gradient-main)" }} />
 
-        <div className="h-20" />
+        {/* Animated perspective grid */}
+        <div className="absolute inset-x-[-20%] bottom-0 h-[45%] z-10 pointer-events-none opacity-70" aria-hidden="true">
+          <div className="grid-floor absolute inset-0" />
+        </div>
+
+        {/* Small 3D cube for mobile & tablet (desktop gets the full scene) */}
+        <div className="lg:hidden absolute top-24 right-6 sm:top-28 sm:right-10 z-20 pointer-events-none" style={{ perspective: "700px", ...heroIn(500) }} aria-hidden="true">
+          <div className="cube" style={{ ["--s" as string]: "64px" }}>
+            <span>NEXT</span><span>PHP</span><span>PY</span><span>SQL</span><span>IoT</span><span>ML</span>
+          </div>
+        </div>
+
+        <div className="flex-1" />
 
         {/* Hero content */}
-        <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col lg:flex-row items-end justify-between px-6 md:px-12 pb-12 gap-8">
-          <div className="flex flex-col max-w-2xl">
+        <div className="relative z-30 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-end justify-between px-5 sm:px-6 md:px-12 pb-10 sm:pb-16 pt-32 gap-10">
+          <div className="flex flex-col max-w-2xl w-full">
+            <div style={heroIn(0)} className="mb-5">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] tracking-wide bg-white/70 dark:bg-black/30 border border-black/[0.06] dark:border-white/[0.1] text-black/60 dark:text-white/60">
+                <span className="relative flex w-2 h-2">
+                  <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
+                  <span className="relative w-2 h-2 rounded-full bg-emerald-500" />
+                </span>
+                {t.heroBadge}
+              </span>
+            </div>
+
             <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-[1.05] tracking-tight mb-8"
-              style={{
-                fontFamily: '"IBM Plex Sans", sans-serif',
-                opacity: heroReady ? 1 : 0,
-                filter: heroReady ? "blur(0px)" : "blur(24px)",
-                transform: heroReady ? "translateY(0px)" : "translateY(32px)",
-                transition: "opacity 1s cubic-bezier(0.16,1,0.3,1) 0ms, filter 1s cubic-bezier(0.16,1,0.3,1) 0ms, transform 1s cubic-bezier(0.16,1,0.3,1) 0ms",
-              }}
+              className="font-display text-[2.75rem] leading-[1.02] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-light tracking-tight mb-5"
+              style={heroIn(60)}
             >
-              Resa<br />Swastyani.<br />Developer &<br /> Software Engineer.
+              Resa<br />Swastyani<span className="text-indigo-500">.</span>
             </h1>
 
-            <div className="flex gap-8 sm:gap-12">
+            <div className="font-display text-xl sm:text-2xl md:text-3xl font-light text-black/55 dark:text-white/60 mb-8 flex flex-wrap items-baseline gap-x-2" style={heroIn(140)}>
+              <span className="font-mono text-indigo-500/80 text-base sm:text-lg">&gt;</span>
+              <RoleTicker roles={t.heroRoles} />
+            </div>
+
+            <div className="flex flex-col min-[420px]:flex-row gap-3 mb-10" style={heroIn(220)}>
+              <a
+                href="#projects"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm font-medium tracking-wide shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 transition-transform duration-200"
+              >
+                {t.heroCtaPrimary}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-200 group-hover:translate-x-0.5"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              </a>
+              <a
+                href="#contact"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-black/15 dark:border-white/15 bg-white/60 dark:bg-white/[0.04] text-sm tracking-wide text-black/75 dark:text-white/80 hover:bg-white dark:hover:bg-white/[0.08] hover:-translate-y-0.5 transition-[transform,background-color] duration-200"
+              >
+                {t.heroCtaSecondary}
+              </a>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 sm:gap-10 max-w-md">
               {t.heroStats.map((stat, i) => (
-                <div key={i} style={{
-                  opacity: heroReady ? 1 : 0,
-                  filter: heroReady ? "blur(0px)" : "blur(16px)",
-                  transform: heroReady ? "translateY(0px)" : "translateY(20px)",
-                  transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, filter 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${120 + i * 80}ms`,
-                }}>
-                  <div className="text-3xl sm:text-4xl font-light tracking-tight" style={{ fontFamily: '"IBM Plex Sans", sans-serif' }}>{stat.value}</div>
-                  <div className="text-xs text-black/40 dark:text-white/40 tracking-widest uppercase mt-1">{stat.label}</div>
+                <div key={i} style={heroIn(300 + i * 80)}>
+                  <div className="font-display text-2xl sm:text-4xl font-light tracking-tight">{stat.value}</div>
+                  <div className="text-[10px] sm:text-xs text-black/45 dark:text-white/45 tracking-widest uppercase mt-1 leading-snug">{stat.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 3D Mockup — desktop only */}
-          <div className="hidden lg:block w-[480px] h-[320px] shrink-0" style={{ opacity: heroReady ? 1 : 0, transition: "opacity 1.5s ease 0.8s" }}>
-            <TiltMockup />
+          {/* 3D scene — desktop only */}
+          <div className="hidden lg:block w-[460px] xl:w-[520px] h-[380px] shrink-0" style={{ opacity: heroReady ? 1 : 0, transition: "opacity 1.2s ease 0.5s" }}>
+            <HeroScene />
           </div>
         </div>
+
+        {/* Scroll cue */}
+        <a href="#about" aria-label="Scroll to about" className="hidden md:flex absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex-col items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-black/40 dark:text-white/40 hover:text-black/70 dark:hover:text-white/70 transition-colors" style={heroIn(700)}>
+          <span className="w-5 h-8 rounded-full border border-current flex justify-center pt-1.5">
+            <span className="w-0.5 h-1.5 rounded-full bg-current" style={{ animation: "scroll-cue 1.6s ease-in-out infinite" }} />
+          </span>
+          {t.scrollHint}
+        </a>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
           ABOUT ME
           ══════════════════════════════════════════════════════════════════════ */}
-      <section id="about" className="py-32 px-6 md:px-12 lg:px-20">
+      <section id="about" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-16">
+          <div className="mb-10 md:mb-16">
             <PixelIcon type="platform" size={40} />
             <div className="mt-4"><Tag>{t.aboutTag}</Tag></div>
-            <RevealText className="mt-5 text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
+            <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
               {t.aboutHeading}
             </RevealText>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" onMouseMove={handleMouse}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6">
             {/* Foto Profil */}
-            <BentoCard className="lg:col-span-3 flex flex-col items-center justify-center p-8 min-h-[400px]" delay={0}>
-              <div className="relative w-48 h-48 lg:w-full lg:h-72 rounded-2xl overflow-hidden mb-6 border border-black/[0.07] dark:border-white/[0.07]">
+            <BentoCard className="lg:col-span-3 flex flex-col items-center justify-center p-6 sm:p-8 lg:min-h-[400px]" delay={0}>
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 lg:w-full lg:h-72 rounded-2xl overflow-hidden mb-6 border border-black/[0.07] dark:border-white/[0.07] shadow-[0_20px_40px_-20px_rgba(0,0,0,0.35)]">
                 <img
-                  src="/images/resa.png"
+                  src="/images/resa.webp"
                   alt="Resa Swastyani"
-                  className="w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-700"
+                  width={900}
+                  height={1200}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-top [@media(hover:hover)]:grayscale [@media(hover:hover)]:group-hover:grayscale-0 transition-[filter,transform] duration-700 group-hover:scale-[1.03]"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3"
                   }}
@@ -701,7 +207,7 @@ export default function PortfolioPage() {
             </BentoCard>
 
             {/* Profil Teks */}
-            <BentoCard className="lg:col-span-5 p-8 min-h-[400px] flex flex-col justify-between" delay={80}>
+            <BentoCard className="lg:col-span-5 p-6 sm:p-8 lg:min-h-[400px] flex flex-col justify-between" delay={80}>
               <div>
                 <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
@@ -713,7 +219,7 @@ export default function PortfolioPage() {
               </div>
               <div className="pt-6 border-t border-black/[0.06] dark:border-white/[0.06] space-y-2 mt-6">
                 {t.contactInfo.map(item => (
-                  <div key={item.label} className="flex gap-4 text-sm">
+                  <div key={item.label} className="flex gap-3 sm:gap-4 text-sm min-w-0">
                     <span className="text-black/30 dark:text-white/30 min-w-[60px] tracking-widest text-[11px] uppercase pt-0.5">{item.label}</span>
                     {'href' in item && item.href ? (
                       <a href={item.href} target="_blank" rel="noopener noreferrer"
@@ -721,7 +227,7 @@ export default function PortfolioPage() {
                         {item.value}
                       </a>
                     ) : (
-                      <span className="text-black/60 dark:text-white/60 font-light">{item.value}</span>
+                      <span className="text-black/60 dark:text-white/60 font-light break-words min-w-0">{item.value}</span>
                     )}
                   </div>
                 ))}
@@ -729,7 +235,7 @@ export default function PortfolioPage() {
             </BentoCard>
 
             {/* Skills bar card */}
-            <BentoCard className="lg:col-span-4 p-8 min-h-[400px] flex flex-col justify-between" delay={160}>
+            <BentoCard className="md:col-span-2 lg:col-span-4 p-6 sm:p-8 lg:min-h-[400px] flex flex-col justify-between" delay={160}>
               <div>
                 <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
@@ -752,13 +258,13 @@ export default function PortfolioPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           KEY COMPETENCIES
           ══════════════════════════════════════════════════════════════════════ */}
-      <section id="skills" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+      <section id="skills" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-8 mb-10 md:mb-16">
             <div>
               <PixelIcon type="agents" size={40} />
               <div className="mt-4"><Tag>{t.skillsTag}</Tag></div>
-              <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+              <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
                 {t.skillsHeading}
               </RevealText>
             </div>
@@ -767,22 +273,22 @@ export default function PortfolioPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-12 gap-3" onMouseMove={handleMouse}>
-            <BentoCard className="col-span-12 md:col-span-8 p-8" delay={0}>
+          <div className="grid grid-cols-12 gap-3 md:gap-4">
+            <BentoCard className="col-span-12 md:col-span-7 lg:col-span-8 p-6 sm:p-8" delay={0}>
               <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
               </div>
               <h3 className="text-lg font-light mb-5">{t.techTitle}</h3>
               <div className="flex flex-wrap gap-2">
                 {["Next.js", "React", "Laravel", "PHP", "Python", "Bootstrap", "MySQL", "Scikit-learn", "Pandas", "Streamlit", "Raspberry Pi Pico", "IoT", "REST API", "Web Server", "Machine Learning"].map(skill => (
-                  <span key={skill} className="px-3 py-1.5 rounded-lg text-sm text-black/55 dark:text-white/55 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] transition-colors cursor-default">
+                  <span key={skill} className="px-3 py-1.5 rounded-lg text-sm text-black/55 dark:text-white/55 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] hover:-translate-y-0.5 transition-[background-color,transform] duration-200 cursor-default">
                     {skill}
                   </span>
                 ))}
               </div>
             </BentoCard>
 
-            <BentoCard className="col-span-12 md:col-span-4 p-8" delay={80}>
+            <BentoCard className="col-span-12 md:col-span-5 lg:col-span-4 p-6 sm:p-8" delay={80}>
               <div className="w-10 h-10 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center mb-5">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
               </div>
@@ -810,13 +316,13 @@ export default function PortfolioPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           PROJECT GALLERY — media items first
           ══════════════════════════════════════════════════════════════════════ */}
-      <section id="projects" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+      <section id="projects" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-8 mb-10 md:mb-16">
             <div>
               <PixelIcon type="integrations" size={40} />
               <div className="mt-4"><Tag>{t.projectTag}</Tag></div>
-              <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+              <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
                 {t.projectHeading}
               </RevealText>
             </div>
@@ -832,7 +338,7 @@ export default function PortfolioPage() {
               <span>{t.featuredLabel}</span>
               <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <LocalVideoEmbed
                 src="/video/Perumahan.mp4"
                 title="Property Management System"
@@ -849,14 +355,16 @@ export default function PortfolioPage() {
           </div>
 
           {/* ── Proyek Lainnya — media first ── */}
-          <div className="text-[11px] text-black/25 dark:text-white/25 tracking-widests uppercase mb-6 flex items-center gap-3">
+          <div className="text-[11px] text-black/25 dark:text-white/25 tracking-widest uppercase mb-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
             <span>{t.othersLabel}</span>
             <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {/* — DENGAN MEDIA (GAMBAR / VIDEO) DULU — */}
             <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
               url="https://www.forexforbetterliving.com/"
               displayUrl="forexforbetterliving.com"
               title="Forex For Better Living"
@@ -866,13 +374,15 @@ export default function PortfolioPage() {
               delay={0}
             />
             <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
               url="https://tirtabening.sevensmarts-dev.com/"
               images={[
-                "/images/water1.png",
-                "/images/water2.png",
-                "/images/water3.png",
-                "/images/water4.png",
-                "/images/water5.png"
+                "/images/water1.webp",
+                "/images/water2.webp",
+                "/images/water3.webp",
+                "/images/water4.webp",
+                "/images/water5.webp"
               ]}
               displayUrl="tirtabening.sevensmarts-dev.com"
               title="Water Metering & Billing"
@@ -882,6 +392,8 @@ export default function PortfolioPage() {
               delay={80}
             />
             <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
               url="https://absensielrahma.vercel.app/"
               displayUrl="absensielrahma.vercel.app"
               title="Sistem Absensi El Rahma"
@@ -891,12 +403,14 @@ export default function PortfolioPage() {
               delay={160}
             />
             <ProjectCard
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
               title="AI Training Materials"
               category="AI · Education"
               tech="AI Tools, Workshop"
               desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
               link="#"
-              images={["/images/plt1 (1).jpeg", "/images/plt1 (2).jpeg"]}
+              images={["/images/plt1-1.webp", "/images/plt1-2.webp"]}
               delay={240}
             />
             <LocalVideoEmbed
@@ -912,7 +426,9 @@ export default function PortfolioPage() {
               delay={400}
             />
             <LiveWebsiteEmbed
-              images={["/images/prediksi1.png", "/images/prediksi2.png"]}
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              images={["/images/prediksi1.webp", "/images/prediksi2.webp"]}
               displayUrl="Student Graduation Prediction"
               title="Student Graduation Prediction"
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
@@ -927,19 +443,19 @@ export default function PortfolioPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           PROFESSIONAL EXPERIENCE
           ══════════════════════════════════════════════════════════════════════ */}
-      <section id="experience" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+      <section id="experience" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-16">
+          <div className="mb-10 md:mb-16">
             <PixelIcon type="workflow" size={40} />
             <div className="mt-4"><Tag>{t.expTag}</Tag></div>
-            <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+            <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
               {t.expHeading}
             </RevealText>
           </div>
 
-          <div className="space-y-3" onMouseMove={handleMouse}>
+          <div className="space-y-3">
             {t.experience.map((exp, idx) => (
-              <BentoCard key={exp.no} className="p-6 md:p-8 flex flex-col md:flex-row gap-6" delay={idx * 40}>
+              <BentoCard key={exp.no} className="p-5 sm:p-6 md:p-8 flex flex-col md:flex-row gap-4 md:gap-6" delay={idx * 40}>
                 <div className="shrink-0 flex flex-row md:flex-col md:items-start items-center gap-4 md:gap-0 md:w-48">
                   <span className="font-pixel text-[11px] text-black/20 dark:text-white/20 tracking-widest">{exp.no}</span>
                   <div className="md:mt-3">
@@ -948,7 +464,7 @@ export default function PortfolioPage() {
                   </div>
                 </div>
                 <div className="flex-1 border-t md:border-t-0 md:border-l border-black/[0.06] dark:border-white/[0.06] pt-4 md:pt-0 md:pl-6">
-                  <h3 className="text-xl font-light mb-1">{exp.role}</h3>
+                  <h3 className="text-lg sm:text-xl font-light mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{exp.role}</h3>
                   <div className="text-sm text-black/40 dark:text-white/40 mb-4">{exp.company}</div>
                   <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed mb-5">{exp.desc}</p>
                   <div className="flex flex-wrap gap-2">
@@ -966,13 +482,13 @@ export default function PortfolioPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           EDUCATION & CERTIFICATIONS
           ══════════════════════════════════════════════════════════════════════ */}
-      <section id="education" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+      <section id="education" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-8 mb-10 md:mb-16">
             <div>
               <PixelIcon type="integrations" size={40} />
               <div className="mt-4"><Tag>{t.eduTag}</Tag></div>
-              <RevealText className="mt-5 text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+              <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
                 {t.eduHeading}
               </RevealText>
             </div>
@@ -981,10 +497,10 @@ export default function PortfolioPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" onMouseMove={handleMouse}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <div className="space-y-3">
-              <BentoCard className="p-8" delay={0}>
-                <div className="flex items-start gap-5">
+              <BentoCard className="p-6 sm:p-8" delay={0}>
+                <div className="flex items-start gap-4 sm:gap-5">
                   <div className="w-12 h-12 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center shrink-0">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                   </div>
@@ -1000,8 +516,8 @@ export default function PortfolioPage() {
                 </div>
               </BentoCard>
 
-              <BentoCard className="p-8" delay={80}>
-                <div className="flex items-start gap-5">
+              <BentoCard className="p-6 sm:p-8" delay={80}>
+                <div className="flex items-start gap-4 sm:gap-5">
                   <div className="w-12 h-12 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center shrink-0">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
                   </div>
@@ -1013,8 +529,8 @@ export default function PortfolioPage() {
                 </div>
               </BentoCard>
 
-              <BentoCard className="p-8" delay={120}>
-                <div className="flex items-start gap-5">
+              <BentoCard className="p-6 sm:p-8" delay={120}>
+                <div className="flex items-start gap-4 sm:gap-5">
                   <div className="w-12 h-12 rounded-xl border border-black/10 dark:border-white/10 flex items-center justify-center shrink-0">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                   </div>
@@ -1042,7 +558,7 @@ export default function PortfolioPage() {
                   ].map((cert, i) => (
                     <div
                       key={i}
-                      className={`flex items-start gap-4 p-4 rounded-xl transition-colors ${cert.highlight ? "bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06]" : ""}`}
+                      className={`flex items-start gap-4 p-4 rounded-xl transition-[background-color,transform] duration-200 hover:translate-x-1 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] ${cert.highlight ? "bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06]" : ""}`}
                     >
                       <span className="text-xl shrink-0 mt-0.5">{cert.icon}</span>
                       <div>
@@ -1063,11 +579,11 @@ export default function PortfolioPage() {
 
       {/* ── MARQUEE — tech stack ──────────────────────────────────────────── */}
       <section className="py-0 border-t border-black/[0.06] dark:border-white/[0.06] overflow-hidden select-none">
-        <div className="flex border-b border-black/[0.06] dark:border-white/[0.06]" style={{ animation: "marqueeLeft 28s linear infinite" }}>
+        <div className="marquee flex w-max border-b border-black/[0.06] dark:border-white/[0.06]" style={{ animation: "marqueeLeft 36s linear infinite" }}>
           {[...Array(3)].map((_, rep) => (
             <div key={rep} className="flex shrink-0">
               {["Next.js", "React", "Laravel", "PHP", "Python", "Bootstrap", "MySQL", "Scikit-Learn", "Streamlit", "IoT"].map((cap) => (
-                <div key={`${rep}-${cap}`} className="flex items-center gap-6 px-10 py-5 border-r border-black/[0.06] dark:border-white/[0.06] shrink-0">
+                <div key={`${rep}-${cap}`} className="flex items-center gap-6 px-6 sm:px-10 py-4 sm:py-5 border-r border-black/[0.06] dark:border-white/[0.06] shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-black/20 dark:bg-white/20 shrink-0" />
                   <span className="text-sm text-black/45 dark:text-white/45 whitespace-nowrap tracking-wide">{cap}</span>
                 </div>
@@ -1075,11 +591,11 @@ export default function PortfolioPage() {
             </div>
           ))}
         </div>
-        <div className="flex" style={{ animation: "marqueeRight 22s linear infinite" }}>
+        <div className="marquee flex w-max" style={{ animation: "marqueeRight 30s linear infinite" }}>
           {[...Array(3)].map((_, rep) => (
             <div key={rep} className="flex shrink-0">
               {["Leadership", "Target Oriented", "Data Management", "Machine Learning", "API Integration", "Web Server", "Problem Solving", "Team Work", "Full-Stack Dev"].map((cap) => (
-                <div key={`${rep}-${cap}`} className="flex items-center gap-6 px-10 py-5 border-r border-black/[0.06] dark:border-white/[0.06] shrink-0">
+                <div key={`${rep}-${cap}`} className="flex items-center gap-6 px-6 sm:px-10 py-4 sm:py-5 border-r border-black/[0.06] dark:border-white/[0.06] shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-black/12 dark:bg-white/12 shrink-0" />
                   <span className="text-sm text-black/30 dark:text-white/30 whitespace-nowrap tracking-wide">{cap}</span>
                 </div>
@@ -1090,13 +606,13 @@ export default function PortfolioPage() {
       </section>
 
       {/* ── LIVE AGENTS ────────────────────────────────────────────────────── */}
-      <section id="highlight" className="py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+      <section id="highlight" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
               <PixelIcon type="agents" size={40} />
               <div className="mt-4"><Tag>{t.dedicationTag}</Tag></div>
-              <RevealText className="mt-5 text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
+              <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
                 {t.dedicationHeading}
               </RevealText>
               <p className="mt-6 text-base text-black/40 dark:text-white/40 leading-relaxed max-w-sm">
@@ -1107,20 +623,21 @@ export default function PortfolioPage() {
                 <span className="text-black/30 dark:text-white/30 text-sm mb-1 tracking-wide">{t.linesCode}</span>
               </div>
             </div>
-            <div className="relative">
-              <LiveAgentFeed />
+            <div className="relative" style={{ perspective: "1200px" }}>
+              <div className="lg:[transform:rotateY(-8deg)_rotateX(4deg)] transition-transform duration-700 hover:[transform:none]">
+                <LiveAgentFeed />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── CTA — contact ────────────────────────────────────────────────── */}
-      <section className="relative py-32 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
-        <img src="/images/footer.png" alt="" aria-hidden="true" className="absolute bottom-0 left-0 w-full object-cover object-bottom pointer-events-none select-none opacity-85 dark:opacity-30" />
-        <div className="absolute inset-0 pointer-events-none" style={{ maskImage: "linear-gradient(to top, transparent 0%, black 55%)", WebkitMaskImage: "linear-gradient(to top, transparent 0%, black 55%)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }} />
+      <section id="contact" className="relative py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+        <img src="/images/footer.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" className="absolute bottom-0 left-0 w-full h-full object-cover object-bottom pointer-events-none select-none opacity-85 dark:opacity-30" />
         <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-cta)" }} />
         <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05] mb-6">
+          <h2 className="font-display text-[2.1rem] sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.08] mb-6">
             {t.ctaHeading.split("\n").map((line, i) => (
               <span key={i}>{line}{i === 0 && <br />}</span>
             ))}
@@ -1130,8 +647,8 @@ export default function PortfolioPage() {
           </p>
           {!submitted ? (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-              <input type="email" placeholder={t.ctaEmailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} required className="flex-1 bg-white dark:bg-[#1c1c1a] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-[#111] dark:text-[#ececea] placeholder:text-black/25 dark:placeholder:text-white/25 focus:outline-none focus:border-black/25 dark:focus:border-white/25 transition-colors" />
-              <button type="submit" className="px-8 py-3 bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-white transition-colors tracking-widest font-medium">{t.ctaButton}</button>
+              <input type="email" aria-label="Email" autoComplete="email" placeholder={t.ctaEmailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} required className="flex-1 bg-white dark:bg-[#1c1c1a] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-base sm:text-sm text-[#111] dark:text-[#ececea] placeholder:text-black/25 dark:placeholder:text-white/25 focus:outline-none focus:border-black/25 dark:focus:border-white/25 transition-colors" />
+              <button type="submit" className="px-8 py-3.5 bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-white hover:-translate-y-0.5 transition-[background-color,transform] duration-200 tracking-widest font-medium">{t.ctaButton}</button>
             </form>
           ) : (
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-emerald-600/20 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm">
@@ -1142,8 +659,10 @@ export default function PortfolioPage() {
         </div>
       </section>
 
+      </main>
+
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer className="py-10 px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+      <footer className="py-10 pb-24 sm:pb-10 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <span className="font-pixel text-xs tracking-[0.25em] text-black/50 dark:text-white/50">RESA SWASTYANI</span>
 
@@ -1153,7 +672,7 @@ export default function PortfolioPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <a href="mailto:resaarrazy@gmail.com" className="text-xs text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60 transition-colors tracking-wide">resaarrazy@gmail.com</a>
             <a
               href="https://www.linkedin.com/in/resa-swastyani-a1a425366"

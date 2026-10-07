@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useInView } from "@/hooks/use-in-view"
 
-// Splits text into words and reveals each with staggered opacity+blur+translateY
-// matching the AGENTIC intro animation style.
+// Splits text into words and flips each one up in 3D with a stagger.
+// Only opacity + transform are animated (GPU friendly, no blur filters).
 export function RevealText({
   children,
   className = "",
   as: Tag = "h2",
-  stagger = 80,       // ms between each word
-  duration = 700,     // ms per word transition
+  stagger = 60,       // ms between each word
+  duration = 800,     // ms per word transition
   delay = 0,          // initial delay before first word
   threshold = 0.2,    // IntersectionObserver threshold
 }: {
@@ -21,25 +21,7 @@ export function RevealText({
   delay?: number
   threshold?: number
 }) {
-  const ref       = useRef<HTMLElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [threshold])
+  const { ref, inView: visible } = useInView<HTMLElement>({ threshold })
 
   // Split on spaces but preserve line breaks (rendered via <br />)
   const parts = children.split(/(\n)/g)
@@ -50,37 +32,36 @@ export function RevealText({
       words.push({ word: "\n", index: wordIndex++ })
     } else {
       part.split(" ").forEach((w, i, arr) => {
-        if (w) words.push({ word: i < arr.length - 1 ? w + "\u00A0" : w, index: wordIndex++ })
+        if (w) words.push({ word: i < arr.length - 1 ? w + " " : w, index: wordIndex++ })
       })
     }
   })
 
-  const totalWords = words.filter(w => w.word !== "\n").length
+  const ease = "cubic-bezier(0.16,1,0.3,1)"
 
   return (
     // @ts-ignore — dynamic tag
-    <Tag ref={ref} className={className} style={{ display: "block", overflow: "hidden" }}>
+    <Tag ref={ref} className={className} style={{ display: "block", perspective: "600px" }} aria-label={children.replace(/\n/g, " ")}>
       {words.map(({ word, index }) => {
         if (word === "\n") return <br key={`br-${index}`} />
 
         const wordDelay = delay + index * stagger
 
         return (
-          <span
-            key={index}
-            style={{
-              display:    "inline-block",
-              opacity:    visible ? 1 : 0,
-              filter:     visible ? "blur(0px)" : "blur(8px)",
-              transform:  visible ? "translateY(0)" : "translateY(12px)",
-              transition: visible
-                ? `opacity ${duration}ms cubic-bezier(0.16,1,0.3,1) ${wordDelay}ms,
-                   filter  ${duration}ms cubic-bezier(0.16,1,0.3,1) ${wordDelay}ms,
-                   transform ${duration}ms cubic-bezier(0.16,1,0.3,1) ${wordDelay}ms`
-                : "none",
-            }}
-          >
-            {word}
+          <span key={index} aria-hidden="true" className="inline-block overflow-hidden align-bottom pb-[0.08em] -mb-[0.08em]">
+            <span
+              className="inline-block"
+              style={{
+                opacity:         visible ? 1 : 0,
+                transform:       visible ? "translateY(0) rotateX(0deg)" : "translateY(70%) rotateX(-75deg)",
+                transformOrigin: "50% 100%",
+                transition:      visible
+                  ? `opacity ${duration}ms ${ease} ${wordDelay}ms, transform ${duration}ms ${ease} ${wordDelay}ms`
+                  : "none",
+              }}
+            >
+              {word}
+            </span>
           </span>
         )
       })}

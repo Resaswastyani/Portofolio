@@ -231,25 +231,31 @@ function drawPricing(ctx: CanvasRenderingContext2D, W: number, t: number) {
 }
 
 // ── Canvas wrapper ────────────────────────────────────────────────────────────
+// Canvas is sized once, animation runs at ~24fps and only while visible on screen.
+const FRAME_MS = 1000 / 24
+
 export function PixelIcon({ type, size = 40 }: PixelIconProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const rafRef    = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext("2d")!
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
 
-    const draw = (t: number) => {
-      const dpr = window.devicePixelRatio || 1
-      canvas.width  = size * dpr
-      canvas.height = size * dpr
-      ctx.scale(dpr, dpr)
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    canvas.width  = size * dpr
+    canvas.height = size * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.imageSmoothingEnabled = false
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    let raf = 0
+    let last = 0
+    let running = false
+
+    const render = (t: number) => {
       ctx.clearRect(0, 0, size, size)
-
-      // Disable anti-aliasing for crisp pixels
-      ctx.imageSmoothingEnabled = false
-
       switch (type) {
         case "platform":      drawPlatform(ctx, size, t);      break
         case "agents":        drawAgents(ctx, size, t);        break
@@ -257,17 +263,30 @@ export function PixelIcon({ type, size = 40 }: PixelIconProps) {
         case "integrations":  drawIntegrations(ctx, size, t);  break
         case "pricing":       drawPricing(ctx, size, t);       break
       }
-
-      rafRef.current = requestAnimationFrame(draw)
     }
 
-    rafRef.current = requestAnimationFrame(draw)
-    return () => cancelAnimationFrame(rafRef.current)
+    const loop = (t: number) => {
+      if (!running) return
+      if (t - last >= FRAME_MS) { last = t; render(t) }
+      raf = requestAnimationFrame(loop)
+    }
+
+    render(0)
+    if (reduceMotion) return
+
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !running) { running = true; raf = requestAnimationFrame(loop) }
+      else if (!entry.isIntersecting && running) { running = false; cancelAnimationFrame(raf) }
+    })
+    io.observe(canvas)
+    return () => { running = false; cancelAnimationFrame(raf); io.disconnect() }
   }, [type, size])
 
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
+      className="dark:invert"
       style={{
         width: size,
         height: size,
