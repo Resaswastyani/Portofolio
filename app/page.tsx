@@ -341,12 +341,14 @@ export default function PortfolioPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <LocalVideoEmbed
                 src="/video/Perumahan.mp4"
+                poster="/video/posters/Perumahan.webp"
                 title="Property Management System"
                 desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
                 isLive={true}
               />
               <LocalVideoEmbed
                 src="/video/Rupakata.mp4"
+                poster="/video/posters/Rupakata.webp"
                 title="Sistem Penerbitan Buku"
                 desc="Sistem Managemen Penerbitan Buku yang terintegrasi dengan marketplace."
                 isLive={true}
@@ -415,12 +417,14 @@ export default function PortfolioPage() {
             />
             <LocalVideoEmbed
               src="/video/egg.mp4"
+                poster="/video/posters/egg.webp"
               title="Smart Egg Incubator"
               desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
               delay={320}
             />
             <LocalVideoEmbed
               src="/video/Maharani.mp4"
+                poster="/video/posters/Maharani.webp"
               title="Maharani Transport App"
               desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
               delay={400}

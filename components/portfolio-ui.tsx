@@ -50,28 +50,30 @@ export function Tilt3D({
   const gy = useTransform(sy, [0, 1], ["0%", "100%"])
   const glareBg = useMotionTemplate`radial-gradient(500px circle at ${gx} ${gy}, rgba(255,255,255,0.18), transparent 45%)`
   const rectRef = useRef<DOMRect | null>(null)
+  const [hovered, setHovered] = useState(false)
 
-  // Same element tree either way: swapping wrappers would remount children (and their observers)
+  // Same element tree either way: swapping wrappers would remount children (and their observers).
+  // The blended glare layer (costly to composite) exists only while hovered.
   return (
     <div className={`h-full ${className}`} style={fine ? { perspective: "1100px" } : undefined}>
       <motion.div
         ref={ref}
-        onPointerEnter={fine ? () => { rectRef.current = ref.current?.getBoundingClientRect() ?? null } : undefined}
+        onPointerEnter={fine ? () => { rectRef.current = ref.current?.getBoundingClientRect() ?? null; setHovered(true) } : undefined}
         onPointerMove={fine ? (e) => {
           const r = rectRef.current
           if (!r) return
           x.set((e.clientX - r.left) / r.width)
           y.set((e.clientY - r.top) / r.height)
         } : undefined}
-        onPointerLeave={fine ? () => { x.set(0.5); y.set(0.5) } : undefined}
-        style={fine ? { rotateX, rotateY, transformStyle: "preserve-3d" } : undefined}
-        className="relative h-full group/tilt"
+        onPointerLeave={fine ? () => { x.set(0.5); y.set(0.5); setHovered(false) } : undefined}
+        style={fine ? { rotateX, rotateY } : undefined}
+        className="relative h-full"
       >
         {children}
-        {glare && fine && (
+        {glare && fine && hovered && (
           <motion.div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover/tilt:opacity-100 transition-opacity duration-300 mix-blend-soft-light z-20"
+            className="pointer-events-none absolute inset-0 rounded-2xl mix-blend-soft-light z-20"
             style={{ background: glareBg }}
           />
         )}
@@ -307,6 +309,7 @@ const CARD_SHELL = "relative rounded-2xl border border-black/[0.08] dark:border-
 function Gallery({ images, title, prevLabel, nextLabel }: { images: string[]; title: string; prevLabel: string; nextLabel: string }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [idx, setIdx] = useState(0)
+  const scrollRaf = useRef(0)
 
   const go = (to: number) => {
     const el = trackRef.current
@@ -322,7 +325,11 @@ function Gallery({ images, title, prevLabel, nextLabel }: { images: string[]; ti
         className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory no-scrollbar overscroll-x-contain"
         onScroll={(e) => {
           const el = e.currentTarget
-          setIdx(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)))
+          if (scrollRaf.current) return
+          scrollRaf.current = requestAnimationFrame(() => {
+            scrollRaf.current = 0
+            setIdx(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)))
+          })
         }}
       >
         {images.map((img, i) => (
@@ -416,49 +423,79 @@ export function ProjectCard({
   )
 }
 
-// ─── Local video card — loads only near the viewport, plays only while visible ─
-export function LocalVideoEmbed({ src, title, desc, delay = 0, isLive = false }: { src: string; title: string; desc: string; delay?: number; isLive?: boolean }) {
-  const near = useInView({ rootMargin: "400px 0px", threshold: 0 })            // start fetching shortly before it scrolls in
-  const vis = useInView({ once: false, threshold: 0.35, rootMargin: "0px" })  // play / pause
+// ─── Video playback coordinator ──────────────────────────────────────────────
+// Only ONE project video decodes at a time: the one most visible on screen.
+// Several videos playing at once is what made phones heat up while scrolling the gallery.
+const videoRatios = new Map<HTMLVideoElement, number>()
+let videoIO: IntersectionObserver | null = null
+let pickRaf = 0
+
+function pickActiveVideo() {
+  pickRaf = 0
+  let best: HTMLVideoElement | null = null
+  let bestRatio = 0.5
+  videoRatios.forEach((r, v) => { if (r >= bestRatio) { best = v; bestRatio = r } })
+  videoRatios.forEach((_, v) => {
+    if (v === best) { if (v.paused) v.play().catch(() => { }) }
+    else if (!v.paused) v.pause()
+  })
+}
+
+function observeVideo(v: HTMLVideoElement) {
+  if (!videoIO) {
+    videoIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => videoRatios.set(e.target as HTMLVideoElement, e.isIntersecting ? e.intersectionRatio : 0))
+      if (!pickRaf) pickRaf = requestAnimationFrame(pickActiveVideo)
+    }, { threshold: [0, 0.25, 0.5, 0.75, 1] })
+  }
+  videoRatios.set(v, 0)
+  videoIO.observe(v)
+  return () => { videoIO?.unobserve(v); videoRatios.delete(v); v.pause() }
+}
+
+function canAutoplay() {
+  const c = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+  return !c?.saveData && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+}
+
+// ─── Local video card — poster first, loads near the viewport, one plays at a time ─
+export function LocalVideoEmbed({ src, poster, title, desc, delay = 0, isLive = false }: { src: string; poster?: string; title: string; desc: string; delay?: number; isLive?: boolean }) {
+  const near = useInView({ rootMargin: "300px 0px", threshold: 0 })
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     const v = videoRef.current
-    if (!v || !near.inView) return
-    if (vis.inView) v.play().catch(() => { })
-    else v.pause()
-  }, [vis.inView, near.inView])
+    if (!v || !near.inView || !canAutoplay()) return
+    return observeVideo(v)
+  }, [near.inView])
 
   return (
     <Reveal delay={delay}>
       <Tilt3D max={5}>
         <article ref={near.ref} className={CARD_SHELL}>
           <BrowserBar label={title} />
-          <div ref={vis.ref} className="relative aspect-video bg-black/[0.04] dark:bg-black/30 overflow-hidden">
-            {!ready && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full border-2 border-black/10 dark:border-white/10 border-t-black/40 dark:border-t-white/50 animate-spin" />
-              </div>
-            )}
-            {near.inView && (
-              <video
-                ref={videoRef}
-                controls
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                onLoadedData={() => setReady(true)}
-                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-                style={{ opacity: ready ? 1 : 0 }}
-                src={src}
-              />
-            )}
+          <div className="relative aspect-video bg-black/[0.04] dark:bg-black/30 overflow-hidden">
+            <video
+              ref={videoRef}
+              controls
+              muted
+              loop
+              playsInline
+              preload="none"
+              poster={poster}
+              // pressing play by hand pauses every other video
+              onPlay={(e) => {
+                const me = e.currentTarget
+                document.querySelectorAll("video[data-project]").forEach(v => { if (v !== me) (v as HTMLVideoElement).pause() })
+              }}
+              data-project=""
+              className="absolute inset-0 w-full h-full object-cover"
+              src={near.inView ? src : undefined}
+            />
             {isLive && (
               <div className="absolute top-3 right-3 z-10 pointer-events-none">
                 <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] tracking-widest font-medium text-white bg-black/50 border border-white/10">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" /> LIVE
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" /> LIVE
                 </div>
               </div>
             )}
@@ -481,8 +518,14 @@ export function LiveWebsiteEmbed({
   accentColor?: string; logoText?: string; delay?: number; prevLabel?: string; nextLabel?: string
 }) {
   const near = useInView({ rootMargin: "300px 0px", threshold: 0 })
+  const live = useInView({ once: false, rootMargin: "200px 0px", threshold: 0 })
+  const [wantLive, setWantLive] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const hasImages = !!images && images.length > 0
+  // A whole external website rendered at 4× size is very expensive, so it only runs
+  // after the visitor asks for it, and is torn down again once scrolled away.
+  const showIframe = !!url && !hasImages && wantLive && live.inView
+  useEffect(() => { if (!showIframe) setLoaded(false) }, [showIframe])
 
   return (
     <Reveal delay={delay}>
@@ -493,39 +536,50 @@ export function LiveWebsiteEmbed({
           <div className="relative aspect-[16/10] overflow-hidden bg-white dark:bg-[#161614]">
             {hasImages ? (
               near.inView && <Gallery images={images!} title={title} prevLabel={prevLabel} nextLabel={nextLabel} />
-            ) : url && near.inView ? (
-              <iframe
-                src={url}
-                title={title}
-                loading="lazy"
-                onLoad={() => setLoaded(true)}
-                scrolling="no"
-                tabIndex={-1}
-                className="absolute top-0 left-0 border-0 pointer-events-none origin-top-left transition-opacity duration-700"
-                style={{ width: "400%", height: "400%", transform: "scale(0.25)", opacity: loaded ? 1 : 0 }}
-              />
-            ) : null}
-
-            {/* Loading skeleton (iframes only) */}
-            {!hasImages && !loaded && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center">
-                    <span className="text-[10px] font-black" style={{ color: accentColor }}>{logoText}</span>
+            ) : (
+              <div ref={live.ref} className="absolute inset-0">
+                {/* Branded placeholder */}
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center"
+                  style={{ background: `radial-gradient(120% 90% at 50% 0%, ${accentColor}22, transparent 60%)` }}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#222220] border border-black/[0.06] dark:border-white/[0.08] shadow-sm flex items-center justify-center">
+                    <span className="text-[11px] font-black tracking-wide" style={{ color: accentColor }}>{logoText}</span>
                   </div>
-                  <div className="text-[10px] text-black/30 dark:text-white/30 animate-pulse">Memuat website...</div>
+                  <span className="text-[11px] font-mono text-black/40 dark:text-white/40 truncate max-w-full">{displayUrl}</span>
+                  {url && (
+                    <button
+                      type="button"
+                      onClick={() => setWantLive(true)}
+                      className="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-medium text-white shadow-md hover:-translate-y-0.5 transition-transform"
+                      style={{ background: accentColor }}
+                    >
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4" /></svg>
+                      {wantLive && !loaded ? "Memuat..." : "Lihat preview live"}
+                    </button>
+                  )}
                 </div>
+                {showIframe && (
+                  <iframe
+                    src={url}
+                    title={title}
+                    onLoad={() => setLoaded(true)}
+                    scrolling="no"
+                    tabIndex={-1}
+                    className="absolute top-0 left-0 border-0 pointer-events-none origin-top-left bg-white transition-opacity duration-500"
+                    style={{ width: "400%", height: "400%", transform: "scale(0.25)", opacity: loaded ? 1 : 0 }}
+                  />
+                )}
+                {/* Once the preview is showing, clicking it opens the real site */}
+                {showIframe && loaded && (
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-[5]" aria-label={`Open ${title}`} />
+                )}
               </div>
-            )}
-
-            {/* Click-through overlay so the scaled preview opens the real site */}
-            {url && !hasImages && (
-              <a href={url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-[5]" aria-label={`Open ${title}`} />
             )}
 
             <div className="absolute top-2 right-2 z-10 pointer-events-none">
               <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-medium text-white tracking-wide" style={{ background: accentColor }}>
-                <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-white/70 shrink-0" />
                 LIVE WEBSITE
               </div>
             </div>
