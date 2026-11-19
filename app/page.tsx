@@ -385,11 +385,15 @@ export default function PortfolioPage() {
               desc={t.eggDesc}
               delay={320}
             />
-            <LocalVideoEmbed
-              src="/video/Maharani.mp4"
-                poster="/video/posters/Maharani.webp"
+            <ProjectCard
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
               title={t.maharaniTitle}
+              category="Web"
+              tech="PHP, SQL, Bootstrap"
               desc={t.maharaniDesc}
+              link="https://maharanitransport.com"
+              image="/images/maharani-web-preview.webp"
               delay={400}
             />
             <LiveWebsiteEmbed
