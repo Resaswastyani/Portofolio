@@ -132,9 +132,9 @@ export function HeroScene() {
             <div><span className="text-violet-600 dark:text-violet-300">const</span> <span className="text-black/70 dark:text-white/70">developer</span> = {"{"}</div>
             <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">name</span>: <span className="text-emerald-600 dark:text-emerald-300">&apos;Resa Swastyani&apos;</span>,</div>
             <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">stack</span>: [<span className="text-emerald-600 dark:text-emerald-300">&apos;Next.js&apos;</span>, <span className="text-emerald-600 dark:text-emerald-300">&apos;Laravel&apos;</span>, <span className="text-emerald-600 dark:text-emerald-300">&apos;Python&apos;</span>],</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">gpa</span>: <span className="text-amber-600 dark:text-amber-300">3.94</span>,</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">errorRate</span>: <span className="text-amber-600 dark:text-amber-300">~0</span>,</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">available</span>: <span className="text-violet-600 dark:text-violet-300">true</span>,</div>
+            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">education</span>: <span className="text-emerald-600 dark:text-emerald-300">&apos;Computer Science&apos;</span>,</div>
+            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">focus</span>: [<span className="text-emerald-600 dark:text-emerald-300">&apos;Machine Learning&apos;</span>, <span className="text-emerald-600 dark:text-emerald-300">&apos;IoT&apos;</span>],</div>
+            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">experience</span>: <span className="text-violet-600 dark:text-violet-300">&apos;Full Stack&apos;</span>,</div>
             <div>{"}"}<span className="inline-block w-[6px] h-[11px] align-middle ml-0.5 bg-black/60 dark:bg-white/70" style={{ animation: "caret-blink 1s steps(1) infinite" }} /></div>
             <div className="mt-3 flex gap-2">
               <div className="h-10 flex-1 rounded-lg bg-indigo-500/10 border border-indigo-500/15" />
@@ -173,13 +173,13 @@ export function HeroScene() {
           className="absolute left-[6%] bottom-[6%] px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#222220]/90 border border-black/[0.08] dark:border-white/[0.1] text-[10px] font-mono text-black/60 dark:text-white/60 shadow-lg flex items-center gap-1.5"
           style={{ animation: "float-y 5s ease-in-out infinite", animationDelay: "-2s", ["--z" as string]: "140px" }}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> build passing
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />           Full Stack
         </div>
         <div
           className="absolute right-[10%] top-[0%] px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#222220]/90 border border-black/[0.08] dark:border-white/[0.1] text-[10px] font-mono text-black/60 dark:text-white/60 shadow-lg"
           style={{ animation: "float-y 7s ease-in-out infinite", animationDelay: "-4s", ["--z" as string]: "60px" }}
         >
-          IPK 3.94 ★
+          STMIK El Rahma
         </div>
       </motion.div>
     </div>
