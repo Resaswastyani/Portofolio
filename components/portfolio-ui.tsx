@@ -112,15 +112,15 @@ export function HeroScene() {
         {/* Back glow */}
         <div
           className="absolute w-[70%] h-[70%] rounded-full opacity-60 dark:opacity-40"
-          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.35), transparent 65%)", transform: "translateZ(-120px)" }}
+          style={{ background: "radial-gradient(circle, rgba(198,243,84,0.28), transparent 65%)", transform: "translateZ(-120px)" }}
         />
 
         {/* Desktop window */}
         <div
-          className="absolute w-[360px] h-[230px] xl:w-[420px] xl:h-[270px] bg-white dark:bg-[#1c1c1a] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden flex flex-col"
+          className="absolute w-[360px] h-[230px] xl:w-[420px] xl:h-[270px] bg-white dark:bg-[#1a1112] border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden flex flex-col"
           style={{ transform: "translateZ(20px)", boxShadow: "0 40px 80px -20px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.04)" }}
         >
-          <div className="h-7 w-full bg-[#f0eeea] dark:bg-[#2a2a28] border-b border-black/[0.05] dark:border-white/[0.05] flex items-center px-3 gap-1.5 shrink-0">
+          <div className="h-7 w-full bg-[#f0eeea] dark:bg-[#271a1b] border-b border-black/[0.05] dark:border-white/[0.05] flex items-center px-3 gap-1.5 shrink-0">
             <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
             <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
             <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
@@ -129,30 +129,30 @@ export function HeroScene() {
             </div>
           </div>
           <div className="flex-1 bg-[#fafaf8] dark:bg-[#161614] p-4 font-mono text-[10px] leading-[1.7] overflow-hidden">
-            <div><span className="text-violet-600 dark:text-violet-300">const</span> <span className="text-black/70 dark:text-white/70">developer</span> = {"{"}</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">name</span>: <span className="text-emerald-600 dark:text-emerald-300">&apos;Resa Swastyani&apos;</span>,</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">stack</span>: [<span className="text-emerald-600 dark:text-emerald-300">&apos;Next.js&apos;</span>, <span className="text-emerald-600 dark:text-emerald-300">&apos;Laravel&apos;</span>, <span className="text-emerald-600 dark:text-emerald-300">&apos;Python&apos;</span>],</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">education</span>: <span className="text-emerald-600 dark:text-emerald-300">&apos;Computer Science&apos;</span>,</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">focus</span>: [<span className="text-emerald-600 dark:text-emerald-300">&apos;Machine Learning&apos;</span>, <span className="text-emerald-600 dark:text-emerald-300">&apos;IoT&apos;</span>],</div>
-            <div className="pl-4"><span className="text-sky-600 dark:text-sky-300">experience</span>: <span className="text-violet-600 dark:text-violet-300">&apos;Full Stack&apos;</span>,</div>
+            <div><span className="text-[#f65032] dark:text-[#ff9d3d]">const</span> <span className="text-black/70 dark:text-white/70">developer</span> = {"{"}</div>
+            <div className="pl-4"><span className="text-[#85963e] dark:text-[#c6f354]">name</span>: <span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;Resa Swastyani&apos;</span>,</div>
+            <div className="pl-4"><span className="text-[#85963e] dark:text-[#c6f354]">stack</span>: [<span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;Next.js&apos;</span>, <span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;Laravel&apos;</span>, <span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;Python&apos;</span>],</div>
+            <div className="pl-4"><span className="text-[#85963e] dark:text-[#c6f354]">education</span>: <span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;Computer Science&apos;</span>,</div>
+            <div className="pl-4"><span className="text-[#85963e] dark:text-[#c6f354]">focus</span>: [<span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;Machine Learning&apos;</span>, <span className="text-[#b66a26] dark:text-[#ff9d3d]">&apos;IoT&apos;</span>],</div>
+            <div className="pl-4"><span className="text-[#85963e] dark:text-[#c6f354]">experience</span>: <span className="text-[#f65032] dark:text-[#ff9d3d]">&apos;Full Stack&apos;</span>,</div>
             <div>{"}"}<span className="inline-block w-[6px] h-[11px] align-middle ml-0.5 bg-black/60 dark:bg-white/70" style={{ animation: "caret-blink 1s steps(1) infinite" }} /></div>
             <div className="mt-3 flex gap-2">
-              <div className="h-10 flex-1 rounded-lg bg-indigo-500/10 border border-indigo-500/15" />
-              <div className="h-10 flex-1 rounded-lg bg-emerald-500/10 border border-emerald-500/15" />
-              <div className="h-10 flex-1 rounded-lg bg-amber-500/10 border border-amber-500/15" />
+              <div className="h-10 flex-1 rounded-lg bg-[#c6f354]/10 border border-[#c6f354]/25" />
+              <div className="h-10 flex-1 rounded-lg bg-[#ff9d3d]/10 border border-[#ff9d3d]/25" />
+              <div className="h-10 flex-1 rounded-lg bg-[#f65032]/10 border border-[#f65032]/25" />
             </div>
           </div>
         </div>
 
         {/* Phone */}
         <div
-          className="absolute right-[2%] bottom-[0%] w-[104px] h-[210px] bg-[#f5f4f0] dark:bg-[#2a2a28] rounded-[1.8rem] overflow-hidden flex flex-col border border-black/[0.08] dark:border-white/[0.08]"
+          className="absolute right-[2%] bottom-[0%] w-[104px] h-[210px] bg-[#f5f4f0] dark:bg-[#271a1b] rounded-[1.8rem] overflow-hidden flex flex-col border border-black/[0.08] dark:border-white/[0.08]"
           style={{ transform: "translateZ(110px)", boxShadow: "0 30px 60px -10px rgba(0,0,0,0.3)", animation: "float-y 6s ease-in-out infinite", ["--z" as string]: "110px" }}
         >
           <div className="absolute top-0 inset-x-0 h-4 bg-[#1a1a1a] rounded-b-xl w-[40%] mx-auto z-10" />
           <div className="w-full h-full bg-[#fafaf8] dark:bg-[#1a1a18] flex flex-col p-2 pt-6 gap-1.5">
-            <div className="h-8 w-full bg-indigo-500/15 rounded-xl flex items-center px-2 gap-1">
-              <div className="w-3 h-3 rounded-full bg-indigo-400/50" />
+            <div className="h-8 w-full bg-[#c6f354]/15 rounded-xl flex items-center px-2 gap-1">
+              <div className="w-3 h-3 rounded-full bg-[#c6f354]/55" />
               <div className="h-1.5 bg-black/10 dark:bg-white/15 rounded-full flex-1" />
             </div>
             {[0, 1, 2, 3].map(i => (
@@ -173,7 +173,7 @@ export function HeroScene() {
           className="absolute left-[6%] bottom-[6%] px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#222220]/90 border border-black/[0.08] dark:border-white/[0.1] text-[10px] font-mono text-black/60 dark:text-white/60 shadow-lg flex items-center gap-1.5"
           style={{ animation: "float-y 5s ease-in-out infinite", animationDelay: "-2s", ["--z" as string]: "140px" }}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />           Full Stack
+          <span className="w-1.5 h-1.5 rounded-full bg-[#c6f354]" />           Full Stack
         </div>
         <div
           className="absolute right-[10%] top-[0%] px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#222220]/90 border border-black/[0.08] dark:border-white/[0.1] text-[10px] font-mono text-black/60 dark:text-white/60 shadow-lg"
@@ -223,7 +223,7 @@ export function BentoCard({ children, className = "", delay = 0 }: { children: R
     <div
       ref={ref}
       onPointerMove={trackSpotlight}
-      className={`spotlight reveal-3d ${inView ? "is-in" : ""} group relative rounded-2xl border border-black/[0.07] dark:border-white/[0.07] bg-white dark:bg-[#1c1c1a] overflow-hidden hover:border-black/[0.15] dark:hover:border-white/[0.15] hover:shadow-[0_24px_48px_-24px_rgba(0,0,0,0.18)] [transition-property:opacity,transform,border-color,box-shadow] ${className}`}
+      className={`spotlight reveal-3d ${inView ? "is-in" : ""} group relative rounded-2xl border border-black/[0.07] dark:border-white/[0.07] bg-white dark:bg-[#1a1112] overflow-hidden hover:border-black/[0.15] dark:hover:border-white/[0.15] hover:shadow-[0_24px_48px_-24px_rgba(0,0,0,0.18)] [transition-property:opacity,transform,border-color,box-shadow] ${className}`}
       style={{ ["--d" as string]: `${delay}ms` }}
     >
       {children}
@@ -235,7 +235,7 @@ export function BentoCard({ children, className = "", delay = 0 }: { children: R
 export function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] tracking-widest font-sans text-black/45 dark:text-white/45 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.05]">
-      <span className="w-1 h-1 rounded-full bg-indigo-500/70" />
+      <span className="w-1 h-1 rounded-full bg-[#c6f354]" />
       {children}
     </span>
   )
@@ -252,7 +252,7 @@ export function SkillBar({ label, level }: { label: string; level: number }) {
       </div>
       <div className="h-1.5 bg-black/[0.06] dark:bg-white/[0.08] rounded-full overflow-hidden">
         <div
-          className="h-full w-full rounded-full origin-left bg-gradient-to-r from-black/30 to-indigo-500/70 dark:from-white/30 dark:to-indigo-400/80"
+          className="h-full w-full rounded-full origin-left bg-gradient-to-r from-black/30 to-[#c6f354]/70 dark:from-white/30 dark:to-[#c6f354]"
           style={{
             transform: `scaleX(${inView ? level / 100 : 0})`,
             transition: "transform 1.2s cubic-bezier(0.16,1,0.3,1) 0.2s",
@@ -303,7 +303,7 @@ function BrowserBar({ label, href, accent }: { label: string; href?: string; acc
   )
 }
 
-const CARD_SHELL = "relative rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden h-full flex flex-col transition-[box-shadow,border-color] duration-500 hover:shadow-[0_30px_60px_-25px_rgba(0,0,0,0.3)] hover:border-black/[0.14] dark:hover:border-white/[0.16]"
+const CARD_SHELL = "relative rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1a1112] overflow-hidden h-full flex flex-col transition-[box-shadow,border-color] duration-500 hover:shadow-[0_30px_60px_-25px_rgba(0,0,0,0.3)] hover:border-black/[0.14] dark:hover:border-white/[0.16]"
 
 // ─── Image gallery with arrows, dots & swipe (native scroll-snap) ─────────────
 function Gallery({ images, title, prevLabel, nextLabel }: { images: string[]; title: string; prevLabel: string; nextLabel: string }) {

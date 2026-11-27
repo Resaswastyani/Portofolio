@@ -32,6 +32,7 @@ function HeroVideo({ ready }: { ready: boolean }) {
       className="absolute inset-0 w-full h-full object-cover z-0"
       src={HERO_VIDEO}
       style={{
+        filter: "brightness(0.34) saturate(0.78)",
         transform: ready ? "scale(1.04)" : "scale(0.9)",
         transition: "transform 1.8s cubic-bezier(0.16, 1, 0.3, 1)",
         willChange: "transform",
@@ -65,7 +66,7 @@ export default function PortfolioPage() {
   })
 
   return (
-    <div id="top" className="bg-[#F5F4F0] dark:bg-[#111110] text-[#111] dark:text-[#ececea] min-h-screen font-sans antialiased">
+    <div id="top" className="bg-[#F5F4F0] dark:bg-[#10090a] text-[#111] dark:text-[#f4f0e8] min-h-screen font-sans antialiased">
 
       {/* ── INTRO ANIMATION ───────────────────────────────────────────────── */}
       <IntroAnimation onDone={handleIntroDone} />
@@ -79,6 +80,7 @@ export default function PortfolioPage() {
           ══════════════════════════════════════════════════════════════════════ */}
       <section id="home" className="relative min-h-[100svh] overflow-hidden flex flex-col">
         <HeroVideo ready={heroReady} />
+        <div aria-hidden="true" className="absolute inset-0 z-[2] pointer-events-none bg-black/45" />
 
         {/* Single gradient fade (replaces stacked backdrop blurs — much cheaper to scroll over) */}
         <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "75%", background: "var(--gradient-main)" }} />
@@ -103,29 +105,29 @@ export default function PortfolioPage() {
             <div style={heroIn(0)} className="mb-5">
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] tracking-wide bg-white/70 dark:bg-black/30 border border-black/[0.06] dark:border-white/[0.1] text-black/60 dark:text-white/60">
                 <span className="relative flex w-2 h-2">
-                  <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
-                  <span className="relative w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="absolute inset-0 rounded-full bg-[#c6f354] animate-ping opacity-60" />
+                  <span className="relative w-2 h-2 rounded-full bg-emerald-500 dark:bg-[#c6f354]" />
                 </span>
                 {t.heroBadge}
               </span>
             </div>
 
             <h1
-              className="font-display text-[2.75rem] leading-[1.02] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-light tracking-tight mb-5"
+              className="font-display uppercase text-[3.7rem] leading-[.82] sm:text-7xl md:text-8xl lg:text-[7.2rem] xl:text-[8.1rem] font-bold tracking-[-0.085em] mb-7"
               style={heroIn(60)}
             >
-              Resa<br />Swastyani<span className="text-indigo-500">.</span>
+              Resa<br /><span className="text-[#c6f354]">Swastyani.</span>
             </h1>
 
             <div className="font-display text-xl sm:text-2xl md:text-3xl font-light text-black/55 dark:text-white/60 mb-8 flex flex-wrap items-baseline gap-x-2" style={heroIn(140)}>
-              <span className="font-mono text-indigo-500/80 text-base sm:text-lg">&gt;</span>
+              <span className="font-mono text-[#c6f354] text-base sm:text-lg">&gt;</span>
               <RoleTicker roles={t.heroRoles} />
             </div>
 
             <div className="flex flex-col min-[420px]:flex-row gap-3 mb-10" style={heroIn(220)}>
               <a
                 href="#projects"
-                className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm font-medium tracking-wide shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 transition-transform duration-200"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#111] dark:bg-[#c6f354] text-white dark:text-[#15110b] text-sm font-semibold tracking-wide shadow-[0_10px_32px_-12px_rgba(198,243,84,0.6)] hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200"
               >
                 {t.heroCtaPrimary}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-200 group-hover:translate-x-0.5"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
@@ -198,7 +200,7 @@ export default function PortfolioPage() {
                 <h3 className="text-lg font-light">Resa Swastyani</h3>
                 <p className="text-xs text-black/35 dark:text-white/35 mt-1">{t.aboutLocation}</p>
                 <div className="mt-4 flex items-center justify-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#c6f354] animate-pulse" />
                   <span className="text-xs text-black/40 dark:text-white/40">{t.aboutAvailable}</span>
                 </div>
               </div>
@@ -242,7 +244,7 @@ export default function PortfolioPage() {
                 <div className="space-y-3">
                   {t.skillAreas.map((area) => (
                     <div key={area} className="flex items-center gap-3 text-sm text-black/50 dark:text-white/50">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/70 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c6f354] shrink-0" />
                       {area}
                     </div>
                   ))}
@@ -435,7 +437,7 @@ export default function PortfolioPage() {
                   </div>
                 </div>
                 <div className="flex-1 border-t md:border-t-0 md:border-l border-black/[0.06] dark:border-white/[0.06] pt-4 md:pt-0 md:pl-6">
-                  <h3 className="text-lg sm:text-xl font-light mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{exp.role}</h3>
+                  <h3 className="text-lg sm:text-xl font-light mb-1 group-hover:text-[#a78a22] dark:group-hover:text-[#c6f354] transition-colors">{exp.role}</h3>
                   <div className="text-sm text-black/40 dark:text-white/40 mb-4">{exp.company}</div>
                   <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed mb-5">{exp.desc}</p>
                   <div className="flex flex-wrap gap-2">
@@ -602,11 +604,11 @@ export default function PortfolioPage() {
           {!submitted ? (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
               <input type="email" aria-label="Email" autoComplete="email" placeholder={t.ctaEmailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} required className="flex-1 bg-white dark:bg-[#1c1c1a] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-base sm:text-sm text-[#111] dark:text-[#ececea] placeholder:text-black/25 dark:placeholder:text-white/25 focus:outline-none focus:border-black/25 dark:focus:border-white/25 transition-colors" />
-              <button type="submit" className="px-8 py-3.5 bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-white hover:-translate-y-0.5 transition-[background-color,transform] duration-200 tracking-widest font-medium">{t.ctaButton}</button>
+              <button type="submit" className="px-8 py-3.5 bg-[#111] dark:bg-[#c6f354] text-white dark:text-[#15110b] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-[#d6ff75] hover:-translate-y-0.5 transition-[background-color,transform] duration-200 tracking-widest font-semibold">{t.ctaButton}</button>
             </form>
           ) : (
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-emerald-600/20 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-emerald-600/20 bg-emerald-50 dark:bg-[#c6f354] dark:border-[#c6f354] dark:text-[#10090a] text-emerald-700 text-sm">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#c6f354]" />
               {t.ctaSuccess}
             </div>
           )}

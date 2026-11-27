@@ -102,7 +102,7 @@ export function IntroAnimation({ onDone }: { onDone: () => void }) {
             return (
               <React.Fragment key={i}>
                 <span
-                  className="font-sans font-bold text-[#111] dark:text-[#ececea] leading-none select-none text-center"
+                  className={`font-sans font-bold uppercase text-[#111] dark:text-[#f4f0e8] leading-none select-none text-center ${i === 1 ? "dark:text-[#c6f354]" : ""}`}
                   style={{
                     fontSize: "1em",
                     letterSpacing: "-0.02em",

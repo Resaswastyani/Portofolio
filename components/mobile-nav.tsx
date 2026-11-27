@@ -73,7 +73,7 @@ export function MobileNav() {
       <div className="fixed top-0 inset-x-0 h-[2px] z-[60] pointer-events-none">
         <div
           ref={progressRef}
-          className="h-full origin-left bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400"
+          className="h-full origin-left bg-gradient-to-r from-[#c6f354] via-[#ff9d3d] to-[#f65032]"
           style={{ transform: "scaleX(0)" }}
         />
       </div>
@@ -125,7 +125,7 @@ export function MobileNav() {
                 href={HIRE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:block whitespace-nowrap text-[11px] px-4 py-2 rounded-xl bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] hover:-translate-y-px hover:shadow-lg transition-[transform,box-shadow] duration-200 tracking-wide font-medium"
+                className="hidden sm:block whitespace-nowrap text-[11px] px-4 py-2 rounded-xl bg-[#111] dark:bg-[#c6f354] text-white dark:text-[#15110b] hover:-translate-y-px hover:shadow-lg transition-[transform,box-shadow] duration-200 tracking-wide font-semibold"
               >
                 {t.nav.hireMe}
               </a>
@@ -185,7 +185,7 @@ export function MobileNav() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={close}
-                className="mt-2 block w-full text-center text-xs px-4 py-3.5 rounded-xl bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] tracking-widest font-medium"
+                className="mt-2 block w-full text-center text-xs px-4 py-3.5 rounded-xl bg-[#111] dark:bg-[#c6f354] text-white dark:text-[#15110b] tracking-widest font-semibold"
               >
                 {t.nav.hireMe}
               </a>

@@ -66,10 +66,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F5F4F0' },
-    { media: '(prefers-color-scheme: dark)', color: '#111110' },
-  ],
+  colorScheme: 'dark',
+  themeColor: '#10090a',
 }
 
 // Runs before paint: skips the intro overlay for returning visitors in the same session
@@ -87,7 +85,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossOrigin="" />
       </head>
       <body className="font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <LangProvider>
             {children}
             <WhatsAppButton />
