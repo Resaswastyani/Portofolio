@@ -14,8 +14,8 @@ const courierPrime = Courier_Prime({ weight: ["400", "700"], subsets: ["latin"],
 const ibmPlexSans = IBM_Plex_Sans({ weight: ["300", "400", "500"], subsets: ["latin"], variable: "--font-plex", display: "swap" });
 
 export const metadata: Metadata = {
-  title: 'Resa Swastyani — Software Engineer',
-  description: 'Portfolio Resa Swastyani, software engineer with experience in Next.js, Laravel, PHP, Python, machine learning, and IoT projects.',
+  title: 'Resa Swastyani — Web Developer & Software Engineer',
+  description: 'Portofolio profesional Resa Swastyani, Wisudawati Terbaik IPK 3.94 dari STMIK El Rahma Yogyakarta. Fullstack Developer spesialisasi Next.js, Laravel, Python, dan Machine Learning. Berpengalaman di berbagai proyek nyata dengan tingkat error ~0%.',
   keywords: [
     'Resa Swastyani',
     'Web Developer',
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     'Machine Learning',
     'Portofolio Developer Indonesia',
     'STMIK El Rahma',
+    'Wisudawati Terbaik',
     'Developer Yogyakarta',
     'Developer Boyolali',
     'IoT Developer',
@@ -34,17 +35,17 @@ export const metadata: Metadata = {
   authors: [{ name: 'Resa Swastyani', url: 'mailto:resaarrazy@gmail.com' }],
   creator: 'Resa Swastyani',
   openGraph: {
-    title: 'Resa Swastyani — Software Engineer',
-    description: 'Software engineer with experience building web applications and machine learning and IoT projects using Next.js, Laravel, PHP, and Python.',
+    title: 'Resa Swastyani — Web Developer & Software Engineer',
+    description: 'Portofolio profesional Resa Swastyani. Fullstack Developer spesialisasi Next.js, Laravel, Python & Machine Learning. Wisudawati Terbaik IPK 3.94/4.00.',
     type: 'website',
-    url: 'https://resadev.my.id',
+    url: 'https://resaswastyani.com',
     siteName: 'Resa Swastyani Portfolio',
     locale: 'id_ID',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Resa Swastyani — Software Engineer',
-    description: 'Software engineer with experience in Next.js, Laravel, PHP, Python, machine learning, and IoT.',
+    title: 'Resa Swastyani — Web Developer & Software Engineer',
+    description: 'Portofolio profesional Resa Swastyani. Fullstack Developer spesialisasi Next.js, Laravel, Python & Machine Learning.',
     creator: '@resaswastyani',
   },
   icons: {
@@ -66,8 +67,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  colorScheme: 'dark',
-  themeColor: '#10090a',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F5F4F0' },
+    { media: '(prefers-color-scheme: dark)', color: '#111110' },
+  ],
 }
 
 // Runs before paint: skips the intro overlay for returning visitors in the same session
@@ -85,7 +88,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossOrigin="" />
       </head>
       <body className="font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <LangProvider>
             {children}
             <WhatsAppButton />

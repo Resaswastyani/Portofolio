@@ -4,9 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --portfolio-lime: #c6f354;
-  --portfolio-orange: #ff9d3d;
-  --portfolio-red: #f65032;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -43,30 +40,30 @@
 }
 
 .dark {
-  --background: #10090a;
-  --foreground: #f4f0e8;
-  --card: #1a1112;
-  --card-foreground: #f4f0e8;
-  --popover: #1a1112;
-  --popover-foreground: #f4f0e8;
-  --primary: var(--portfolio-lime);
-  --primary-foreground: #14100c;
-  --secondary: #271a1b;
-  --secondary-foreground: #f4f0e8;
-  --muted: #271a1b;
-  --muted-foreground: #aca19b;
-  --accent: var(--portfolio-lime);
-  --accent-foreground: #15110b;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: #3c2928;
-  --input: #3c2928;
-  --ring: var(--portfolio-lime);
-  --chart-1: var(--portfolio-lime);
-  --chart-2: var(--portfolio-orange);
-  --chart-3: var(--portfolio-red);
-  --chart-4: #f4f0e8;
-  --chart-5: #85963e;
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -141,13 +138,13 @@
 }
 
 .dark {
-  --bg-main: #10090a;
-  --bg-card: #1a1112;
-  --bg-card-hover: #241617;
-  --bg-nav: rgba(16,9,10,0.78);
-  --text-main: #f4f0e8;
-  --gradient-main: linear-gradient(to top, #10090a 0%, #10090a 18%, rgba(16,9,10,0.88) 35%, rgba(16,9,10,0.56) 55%, rgba(16,9,10,0.15) 75%, transparent 100%);
-  --gradient-cta: linear-gradient(to top, rgb(16,9,10) 0%, rgba(16,9,10,0.92) 18%, rgba(16,9,10,0.55) 35%, transparent 55%);
+  --bg-main: #111110;
+  --bg-card: #1c1c1a;
+  --bg-card-hover: #222220;
+  --bg-nav: rgba(20,20,18,0.60);
+  --text-main: #ececea;
+  --gradient-main: linear-gradient(to top, #111110 0%, #111110 18%, rgba(17,17,16,0.85) 35%, rgba(17,17,16,0.5) 55%, rgba(17,17,16,0.15) 75%, transparent 100%);
+  --gradient-cta: linear-gradient(to top, rgb(17,17,16) 0%, rgba(17,17,16,0.92) 18%, rgba(17,17,16,0.55) 35%, transparent 55%);
 }
 
 /* ── Scrolling & base behaviour ─────────────────────────────────────────── */
@@ -158,7 +155,7 @@ html {
   text-rendering: optimizeLegibility;
 }
 body { overflow-x: clip; }
-::selection { background: rgba(198, 243, 84, 0.32); color: #10090a; }
+::selection { background: rgba(99, 102, 241, 0.22); }
 
 /* Intro overlay never shows for returning visitors (class set by inline script) */
 .intro-seen .intro-overlay { display: none !important; }
@@ -170,12 +167,7 @@ body { overflow-x: clip; }
   backdrop-filter: saturate(160%) blur(12px);
 }
 :root { --bg-nav-solid: rgba(245,244,240,0.72); }
-.dark { --bg-nav-solid: rgba(16,9,10,0.82); }
-.dark main section h2 { color: #f4f0e8; font-weight: 700; text-transform: uppercase; letter-spacing: -.065em; line-height: .92; }
-.dark .spotlight { border-radius: 1rem; }
-.dark .spotlight::before { background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(198,243,84,0.14), transparent 60%); }
-.dark .cube > span { box-shadow: inset 0 0 30px rgba(198,243,84,0.14); }
-.dark .nav-glass { border-color: rgba(198,243,84,0.14); }
+.dark { --bg-nav-solid: rgba(20,20,18,0.72); }
 
 /* ── Keyframes ──────────────────────────────────────────────────────────── */
 @keyframes marqueeLeft {

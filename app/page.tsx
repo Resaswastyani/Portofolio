@@ -3,12 +3,14 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { IntroAnimation } from "@/components/intro-animation"
 import { PixelIcon } from "@/components/pixel-icon"
+import { LiveAgentFeed, LiveAgentCounter } from "@/components/live-agent-feed"
 import { RevealText } from "@/components/reveal-text"
 import { MobileNav } from "@/components/mobile-nav"
+import { DevExSection } from "@/components/devex-section"
 import { useLang } from "@/components/lang-provider"
 import { useInView } from "@/hooks/use-in-view"
 import {
-  BentoCard, Tag, ProjectCard, LocalVideoEmbed, LiveWebsiteEmbed,
+  BentoCard, Tag, SkillBar, ProjectCard, LocalVideoEmbed, LiveWebsiteEmbed,
   HeroScene, RoleTicker,
 } from "@/components/portfolio-ui"
 
@@ -32,7 +34,6 @@ function HeroVideo({ ready }: { ready: boolean }) {
       className="absolute inset-0 w-full h-full object-cover z-0"
       src={HERO_VIDEO}
       style={{
-        filter: "brightness(0.34) saturate(0.78)",
         transform: ready ? "scale(1.04)" : "scale(0.9)",
         transition: "transform 1.8s cubic-bezier(0.16, 1, 0.3, 1)",
         willChange: "transform",
@@ -66,7 +67,7 @@ export default function PortfolioPage() {
   })
 
   return (
-    <div id="top" className="bg-[#F5F4F0] dark:bg-[#10090a] text-[#111] dark:text-[#f4f0e8] min-h-screen font-sans antialiased">
+    <div id="top" className="bg-[#F5F4F0] dark:bg-[#111110] text-[#111] dark:text-[#ececea] min-h-screen font-sans antialiased">
 
       {/* ── INTRO ANIMATION ───────────────────────────────────────────────── */}
       <IntroAnimation onDone={handleIntroDone} />
@@ -80,7 +81,6 @@ export default function PortfolioPage() {
           ══════════════════════════════════════════════════════════════════════ */}
       <section id="home" className="relative min-h-[100svh] overflow-hidden flex flex-col">
         <HeroVideo ready={heroReady} />
-        <div aria-hidden="true" className="absolute inset-0 z-[2] pointer-events-none bg-black/45" />
 
         {/* Single gradient fade (replaces stacked backdrop blurs — much cheaper to scroll over) */}
         <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none" style={{ height: "75%", background: "var(--gradient-main)" }} />
@@ -105,29 +105,29 @@ export default function PortfolioPage() {
             <div style={heroIn(0)} className="mb-5">
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] tracking-wide bg-white/70 dark:bg-black/30 border border-black/[0.06] dark:border-white/[0.1] text-black/60 dark:text-white/60">
                 <span className="relative flex w-2 h-2">
-                  <span className="absolute inset-0 rounded-full bg-[#c6f354] animate-ping opacity-60" />
-                  <span className="relative w-2 h-2 rounded-full bg-emerald-500 dark:bg-[#c6f354]" />
+                  <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
+                  <span className="relative w-2 h-2 rounded-full bg-emerald-500" />
                 </span>
                 {t.heroBadge}
               </span>
             </div>
 
             <h1
-              className="font-display uppercase text-[3.7rem] leading-[.82] sm:text-7xl md:text-8xl lg:text-[7.2rem] xl:text-[8.1rem] font-bold tracking-[-0.085em] mb-7"
+              className="font-display text-[2.75rem] leading-[1.02] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-light tracking-tight mb-5"
               style={heroIn(60)}
             >
-              Resa<br /><span className="text-[#c6f354]">Swastyani.</span>
+              Resa<br />Swastyani<span className="text-indigo-500">.</span>
             </h1>
 
             <div className="font-display text-xl sm:text-2xl md:text-3xl font-light text-black/55 dark:text-white/60 mb-8 flex flex-wrap items-baseline gap-x-2" style={heroIn(140)}>
-              <span className="font-mono text-[#c6f354] text-base sm:text-lg">&gt;</span>
+              <span className="font-mono text-indigo-500/80 text-base sm:text-lg">&gt;</span>
               <RoleTicker roles={t.heroRoles} />
             </div>
 
             <div className="flex flex-col min-[420px]:flex-row gap-3 mb-10" style={heroIn(220)}>
               <a
                 href="#projects"
-                className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#111] dark:bg-[#c6f354] text-white dark:text-[#15110b] text-sm font-semibold tracking-wide shadow-[0_10px_32px_-12px_rgba(198,243,84,0.6)] hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm font-medium tracking-wide shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 transition-transform duration-200"
               >
                 {t.heroCtaPrimary}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-transform duration-200 group-hover:translate-x-0.5"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
@@ -200,7 +200,7 @@ export default function PortfolioPage() {
                 <h3 className="text-lg font-light">Resa Swastyani</h3>
                 <p className="text-xs text-black/35 dark:text-white/35 mt-1">{t.aboutLocation}</p>
                 <div className="mt-4 flex items-center justify-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#c6f354] animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-xs text-black/40 dark:text-white/40">{t.aboutAvailable}</span>
                 </div>
               </div>
@@ -241,13 +241,13 @@ export default function PortfolioPage() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
                 </div>
                 <h3 className="text-xl font-light mb-6">{t.skillsCardTitle}</h3>
-                <div className="space-y-3">
-                  {t.skillAreas.map((area) => (
-                    <div key={area} className="flex items-center gap-3 text-sm text-black/50 dark:text-white/50">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#c6f354] shrink-0" />
-                      {area}
-                    </div>
-                  ))}
+                <div className="space-y-5">
+                  <SkillBar label="Next.js / React" level={88} />
+                  <SkillBar label="Laravel / PHP" level={85} />
+                  <SkillBar label="Python / Scikit-learn" level={78} />
+                  <SkillBar label="AI Tools" level={87} />
+                  <SkillBar label="MySQL / Database" level={82} />
+                  <SkillBar label="Bootstrap / CSS" level={90} />
                 </div>
               </div>
             </BentoCard>
@@ -280,7 +280,7 @@ export default function PortfolioPage() {
               </div>
               <h3 className="text-lg font-light mb-5">{t.techTitle}</h3>
               <div className="flex flex-wrap gap-2">
-                {t.technicalSkills.map(skill => (
+                {["Next.js", "React", "Laravel", "PHP", "Python", "Bootstrap", "MySQL", "Scikit-learn", "Pandas", "Streamlit", "Raspberry Pi Pico", "IoT", "REST API", "Web Server", "Machine Learning"].map(skill => (
                   <span key={skill} className="px-3 py-1.5 rounded-lg text-sm text-black/55 dark:text-white/55 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] hover:-translate-y-0.5 transition-[background-color,transform] duration-200 cursor-default">
                     {skill}
                   </span>
@@ -294,7 +294,14 @@ export default function PortfolioPage() {
               </div>
               <h3 className="text-lg font-light mb-5">{t.softTitle}</h3>
               <div className="space-y-3">
-                {t.softSkills.map(skill => (
+                {[
+                  "Leadership & Team Management",
+                  "Target Oriented",
+                  "Exceptional Organisation",
+                  "Data Management",
+                  "Analisis & Problem Solving",
+                  "Microsoft Office & Spreadsheet",
+                ].map(skill => (
                   <div key={skill} className="flex items-center gap-3 text-sm text-black/50 dark:text-white/50">
                     <div className="w-1 h-1 rounded-full bg-black/25 dark:bg-white/25 shrink-0" />
                     {skill}
@@ -335,17 +342,16 @@ export default function PortfolioPage() {
               <LocalVideoEmbed
                 src="/video/Perumahan.mp4"
                 poster="/video/posters/Perumahan.webp"
-                title={t.propertyTitle}
-                desc={t.propertyDesc}
+                title="Property Management System"
+                desc="Sistem manajemen perumahan PT Dewa Nusa Utama dengan integrasi gateway pembayaran dan user management."
                 isLive={true}
               />
-              <ProjectCard
-                title={t.marketplaceTitle}
-                category="Marketplace · Full Stack"
-                tech="Laravel 12, Next.js"
-                desc={t.marketplaceDesc}
-                link="https://tirtabening.sevensmarts-dev.com/"
-                delay={80}
+              <LocalVideoEmbed
+                src="/video/Rupakata.mp4"
+                poster="/video/posters/Rupakata.webp"
+                title="Sistem Penerbitan Buku"
+                desc="Sistem Managemen Penerbitan Buku yang terintegrasi dengan marketplace."
+                isLive={true}
               />
             </div>
           </div>
@@ -361,21 +367,52 @@ export default function PortfolioPage() {
             <LiveWebsiteEmbed
               prevLabel={t.galleryPrev}
               nextLabel={t.galleryNext}
-              url="https://www.forexforbetterliving.com/"
-              displayUrl="forexforbetterliving.com"
-              title={t.forexTitle}
-              desc={t.forexDesc}
-              accentColor="#167E6C"
-              logoText="FBL"
+              url="https://simpap-xi.vercel.app/"
+              images={["/images/simpap1.webp", "/images/simpap2.webp"]}
+              displayUrl="simpap-xi.vercel.app"
+              title="PAP Management System"
+              desc="Sistem manajemen internal PT Pandawa Amerta Packindo, produsen kemasan plastik fleksibel, dengan login aman berproteksi reCAPTCHA."
+              accentColor="#0284c7"
+              logoText="PAP"
               delay={0}
+            />
+            <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              url="https://tirtabening.sevensmarts-dev.com/"
+              images={[
+                "/images/water1.webp",
+                "/images/water2.webp",
+                "/images/water3.webp",
+                "/images/water4.webp",
+                "/images/water5.webp"
+              ]}
+              displayUrl="tirtabening.sevensmarts-dev.com"
+              title="Water Metering & Billing"
+              desc="Pencatatan meteran air dengan pengiriman tagihan otomatis dan notifikasi pengingat via WhatsApp API."
+              accentColor="#0ea5e9"
+              logoText="AIR"
+              delay={80}
+            />
+            <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              url="https://absensi.pandawaamerta.co.id/login"
+              images={["/images/absensi-pap1.webp", "/images/absensi-pap2.webp"]}
+              displayUrl="absensi.pandawaamerta.co.id"
+              title="PAP Attendance — Sistem Absensi"
+              desc="Absensi karyawan PT Pandawa Amerta Packindo: check-in/check-out dengan verifikasi foto wajah, validasi radius lokasi kantor, dan akses berbasis peran."
+              accentColor="#0e7490"
+              logoText="ABSEN"
+              delay={160}
             />
             <ProjectCard
               prevLabel={t.galleryPrev}
               nextLabel={t.galleryNext}
-              title={t.aiTrainingTitle}
+              title="AI Training Materials"
               category="AI · Education"
               tech="AI Tools, Workshop"
-              desc={t.aiTrainingDesc}
+              desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
               link="#"
               images={["/images/plt1-1.webp", "/images/plt1-2.webp"]}
               delay={240}
@@ -383,19 +420,15 @@ export default function PortfolioPage() {
             <LocalVideoEmbed
               src="/video/egg.mp4"
                 poster="/video/posters/egg.webp"
-              title={t.eggTitle}
-              desc={t.eggDesc}
+              title="Smart Egg Incubator"
+              desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
               delay={320}
             />
-            <ProjectCard
-              prevLabel={t.galleryPrev}
-              nextLabel={t.galleryNext}
-              title={t.maharaniTitle}
-              category="Web"
-              tech="PHP, SQL, Bootstrap"
-              desc={t.maharaniDesc}
-              link="https://maharanitransport.com"
-              image="/images/maharani-web-preview.webp"
+            <LocalVideoEmbed
+              src="/video/Maharani.mp4"
+                poster="/video/posters/Maharani.webp"
+              title="Maharani Transport App"
+              desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
               delay={400}
             />
             <LiveWebsiteEmbed
@@ -403,8 +436,8 @@ export default function PortfolioPage() {
               nextLabel={t.galleryNext}
               images={["/images/prediksi1.webp", "/images/prediksi2.webp"]}
               displayUrl="Student Graduation Prediction"
-              title={t.predictionTitle}
-              desc={t.predictionDesc}
+              title="Student Graduation Prediction"
+              desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
               accentColor="#ff4b4b"
               logoText="PRED"
               delay={480}
@@ -437,7 +470,7 @@ export default function PortfolioPage() {
                   </div>
                 </div>
                 <div className="flex-1 border-t md:border-t-0 md:border-l border-black/[0.06] dark:border-white/[0.06] pt-4 md:pt-0 md:pl-6">
-                  <h3 className="text-lg sm:text-xl font-light mb-1 group-hover:text-[#a78a22] dark:group-hover:text-[#c6f354] transition-colors">{exp.role}</h3>
+                  <h3 className="text-lg sm:text-xl font-light mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{exp.role}</h3>
                   <div className="text-sm text-black/40 dark:text-white/40 mb-4">{exp.company}</div>
                   <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed mb-5">{exp.desc}</p>
                   <div className="flex flex-wrap gap-2">
@@ -481,6 +514,10 @@ export default function PortfolioPage() {
                     <div className="text-[11px] text-black/30 dark:text-white/30 tracking-widest uppercase mb-1">2021 – 2025</div>
                     <h3 className="text-lg font-light mb-1">Sarjana Komputer (S.Kom)</h3>
                     <p className="text-sm text-black/40 dark:text-white/40">STMIK El Rahma Yogyakarta</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-[11px] border border-amber-200/60 dark:border-amber-500/30">🏆 Wisudawati Terbaik TA 2024/2025</span>
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[11px] border border-emerald-200/60 dark:border-emerald-500/30">🎓 IPK 3.94/4.00</span>
+                    </div>
                   </div>
                 </div>
               </BentoCard>
@@ -504,10 +541,10 @@ export default function PortfolioPage() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                   </div>
                   <div className="flex-1">
-                    <div className="text-[11px] text-black/30 dark:text-white/30 tracking-widest uppercase mb-1">{t.organizationPeriod}</div>
-                    <h3 className="text-lg font-light mb-1">{t.organizationRole}</h3>
-                    <p className="text-sm text-black/40 dark:text-white/40">{t.organizationName}</p>
-                    <p className="text-sm text-black/35 dark:text-white/35 leading-relaxed mt-2">{t.organizationExperience}</p>
+                    <div className="text-[11px] text-black/30 dark:text-white/30 tracking-widest uppercase mb-1">2023 – 2024</div>
+                    <h3 className="text-lg font-light mb-1">Ketua Umum HIMATIKA</h3>
+                    <p className="text-sm text-black/40 dark:text-white/40">Himpunan Mahasiswa Informatika — STMIK El Rahma</p>
+                    <p className="text-sm text-black/35 dark:text-white/35 leading-relaxed mt-2">Memimpin organisasi mahasiswa dengan program kerja lintas divisi dan kegiatan nasional.</p>
                   </div>
                 </div>
               </BentoCard>
@@ -515,9 +552,15 @@ export default function PortfolioPage() {
 
             <div>
               <BentoCard className="p-6 h-full" delay={80}>
-                <div className="text-xs text-black/30 dark:text-white/30 tracking-widest uppercase mb-6">{t.certTitle}</div>
+                <div className="text-xs text-black/30 dark:text-white/30 tracking-widest uppercase mb-6">Sertifikasi & Prestasi</div>
                 <div className="space-y-4">
-                  {t.certifications.map((cert, i) => (
+                  {[
+                    { icon: "🏅", title: "MTCNA — MikroTik Certified Network Associate", sub: "MikroTik · 2025", highlight: true },
+                    { icon: "💻", title: "HackerRank Software Engineer", sub: "HackerRank · 2025", highlight: true },
+                    { icon: "🔬", title: "Penelitian Prediksi Kelulusan ML (KNN, DT, NB)", sub: "STMIK El Rahma · 2025", highlight: false },
+                    { icon: "🤖", title: "Pemateri Pelatihan AI untuk Guru Sleman", sub: "LPPM STMIK El Rahma · 2024", highlight: false },
+                    { icon: "📡", title: "IoT Raspberry Pi Pico — Inkubator Telur Otomatis", sub: "Proyek Kampus · 2024", highlight: false },
+                  ].map((cert, i) => (
                     <div
                       key={i}
                       className={`flex items-start gap-4 p-4 rounded-xl transition-[background-color,transform] duration-200 hover:translate-x-1 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] ${cert.highlight ? "bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06]" : ""}`}
@@ -536,29 +579,8 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* ── TRAINING & ORGANIZATION ──────────────────────────────────────── */}
-      <section id="highlight" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
-        <div className="max-w-6xl mx-auto">
-          <PixelIcon type="workflow" size={40} />
-          <div className="mt-4"><Tag>{t.trainingTag}</Tag></div>
-          <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">{t.trainingHeading}</RevealText>
-          <p className="mt-5 mb-10 max-w-xl text-sm text-black/45 dark:text-white/45 leading-relaxed">{t.trainingDesc}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            <BentoCard className="p-6 sm:p-8" delay={0}>
-              <div className="text-[11px] text-black/30 dark:text-white/30 tracking-widest uppercase mb-2">{t.trainingPeriod}</div>
-              <h3 className="text-lg font-light mb-1">{t.trainingRole}</h3>
-              <p className="text-sm text-black/40 dark:text-white/40 mb-3">{t.trainingOrganization}</p>
-              <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed">{t.trainingExperience}</p>
-            </BentoCard>
-            <BentoCard className="p-6 sm:p-8" delay={80}>
-              <div className="text-[11px] text-black/30 dark:text-white/30 tracking-widest uppercase mb-2">{t.organizationPeriod}</div>
-              <h3 className="text-lg font-light mb-1">{t.organizationRole}</h3>
-              <p className="text-sm text-black/40 dark:text-white/40 mb-3">{t.organizationName}</p>
-              <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed">{t.organizationExperience}</p>
-            </BentoCard>
-          </div>
-        </div>
-      </section>
+      {/* ── DEVELOPER EXPERIENCE ──────────────────────────────────────────── */}
+      <DevExSection />
 
       {/* ── MARQUEE — tech stack ──────────────────────────────────────────── */}
       <section className="py-0 border-t border-black/[0.06] dark:border-white/[0.06] overflow-hidden select-none">
@@ -577,7 +599,7 @@ export default function PortfolioPage() {
         <div className="marquee flex w-max" style={{ animation: "marqueeRight 30s linear infinite" }}>
           {[...Array(3)].map((_, rep) => (
             <div key={rep} className="flex shrink-0">
-              {["Team Leadership", "Problem Solving", "Organization", "Data Management", "Website Security", "Email Spam Mitigation", "Office & Spreadsheets", "Machine Learning", "IoT Development"].map((cap) => (
+              {["Leadership", "Target Oriented", "Data Management", "Machine Learning", "API Integration", "Web Server", "Problem Solving", "Team Work", "Full-Stack Dev"].map((cap) => (
                 <div key={`${rep}-${cap}`} className="flex items-center gap-6 px-6 sm:px-10 py-4 sm:py-5 border-r border-black/[0.06] dark:border-white/[0.06] shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-black/12 dark:bg-white/12 shrink-0" />
                   <span className="text-sm text-black/30 dark:text-white/30 whitespace-nowrap tracking-wide">{cap}</span>
@@ -585,6 +607,33 @@ export default function PortfolioPage() {
               ))}
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── LIVE AGENTS ────────────────────────────────────────────────────── */}
+      <section id="highlight" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div>
+              <PixelIcon type="agents" size={40} />
+              <div className="mt-4"><Tag>{t.dedicationTag}</Tag></div>
+              <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]">
+                {t.dedicationHeading}
+              </RevealText>
+              <p className="mt-6 text-base text-black/40 dark:text-white/40 leading-relaxed max-w-sm">
+                {t.dedicationDesc}
+              </p>
+              <div className="mt-10 flex items-end gap-2">
+                <LiveAgentCounter />
+                <span className="text-black/30 dark:text-white/30 text-sm mb-1 tracking-wide">{t.linesCode}</span>
+              </div>
+            </div>
+            <div className="relative" style={{ perspective: "1200px" }}>
+              <div className="lg:[transform:rotateY(-8deg)_rotateX(4deg)] transition-transform duration-700 hover:[transform:none]">
+                <LiveAgentFeed />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -604,11 +653,11 @@ export default function PortfolioPage() {
           {!submitted ? (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
               <input type="email" aria-label="Email" autoComplete="email" placeholder={t.ctaEmailPlaceholder} value={email} onChange={e => setEmail(e.target.value)} required className="flex-1 bg-white dark:bg-[#1c1c1a] border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-base sm:text-sm text-[#111] dark:text-[#ececea] placeholder:text-black/25 dark:placeholder:text-white/25 focus:outline-none focus:border-black/25 dark:focus:border-white/25 transition-colors" />
-              <button type="submit" className="px-8 py-3.5 bg-[#111] dark:bg-[#c6f354] text-white dark:text-[#15110b] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-[#d6ff75] hover:-translate-y-0.5 transition-[background-color,transform] duration-200 tracking-widest font-semibold">{t.ctaButton}</button>
+              <button type="submit" className="px-8 py-3.5 bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] text-sm rounded-xl hover:bg-[#333] dark:hover:bg-white hover:-translate-y-0.5 transition-[background-color,transform] duration-200 tracking-widest font-medium">{t.ctaButton}</button>
             </form>
           ) : (
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-emerald-600/20 bg-emerald-50 dark:bg-[#c6f354] dark:border-[#c6f354] dark:text-[#10090a] text-emerald-700 text-sm">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#c6f354]" />
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-emerald-600/20 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               {t.ctaSuccess}
             </div>
           )}
