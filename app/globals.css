@@ -319,3 +319,26 @@ body { overflow-x: clip; }
   }
   .reveal-3d { opacity: 1; transform: none; }
 }
+
+/* ── Dark-mode ambient backdrop (components/dark-ambient.tsx) ─────────────
+   Colour glows + floating glyphs behind the page, shown only in dark mode. */
+@property --amb1 { syntax: '<color>'; inherits: true; initial-value: rgba(99,102,241,.30); }
+@property --amb2 { syntax: '<color>'; inherits: true; initial-value: rgba(168,85,247,.20); }
+@property --amb3 { syntax: '<color>'; inherits: true; initial-value: rgba(56,189,248,.16); }
+.dark-ambient { transition: --amb1 1.4s ease, --amb2 1.4s ease, --amb3 1.4s ease; }
+.amb-glow { position: absolute; width: 62vmax; height: 62vmax; border-radius: 9999px; will-change: transform; }
+.amb-g1 { left: -18vmax; top: -14vmax; background: radial-gradient(closest-side, var(--amb1), transparent); animation: ambDrift1 28s ease-in-out infinite alternate; }
+.amb-g2 { right: -22vmax; top: 24vh; background: radial-gradient(closest-side, var(--amb2), transparent); animation: ambDrift2 34s ease-in-out infinite alternate; }
+.amb-g3 { left: 18vw; bottom: -30vmax; background: radial-gradient(closest-side, var(--amb3), transparent); animation: ambDrift3 40s ease-in-out infinite alternate; }
+@keyframes ambDrift1 { to { transform: translate3d(22vw, 18vh, 0) scale(1.18); } }
+@keyframes ambDrift2 { to { transform: translate3d(-26vw, -14vh, 0) scale(0.9); } }
+@keyframes ambDrift3 { to { transform: translate3d(14vw, -22vh, 0) scale(1.12); } }
+.amb-par { transform: translate3d(calc(var(--mx, 0) * var(--d) * -46px), calc(var(--my, 0) * var(--d) * -34px), 0); transition: transform .5s cubic-bezier(.16,1,.3,1); }
+.amb-float { display: block; animation: ambFloat var(--t, 10s) ease-in-out infinite; will-change: transform; }
+@keyframes ambFloat { 0%, 100% { transform: translate3d(0,0,0) rotate(var(--r, 0deg)); } 50% { transform: translate3d(0,-26px,0) rotate(calc(var(--r, 0deg) + 9deg)); } }
+.amb-glyph { font-family: var(--font-geist-mono), monospace; font-weight: 600; line-height: 1; color: rgba(255,255,255,.09); white-space: nowrap; }
+.amb-tint { color: var(--amb1); }
+.amb-ring { border-radius: 9999px; border: 2px solid var(--amb2); box-shadow: 0 0 24px var(--amb1); }
+.amb-word { font-family: var(--font-display); font-weight: 500; font-size: clamp(6rem, 22vw, 22rem); line-height: .8; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07); animation: ambWordIn 1.1s cubic-bezier(.16,1,.3,1) both; }
+@keyframes ambWordIn { from { opacity: 0; transform: translate3d(0, 6vh, 0); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .amb-glow, .amb-float, .amb-word { animation: none; } }

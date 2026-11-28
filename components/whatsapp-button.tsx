@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { useLang } from "@/components/lang-provider"
 
 const WA_NUMBER = "6285702212770"
@@ -10,6 +11,9 @@ const WA_MESSAGE_EN = "Hello Resa, I'm interested in collaborating with you. Can
 export function WhatsAppButton() {
   const [hovered, setHovered] = useState(false)
   const { lang, t } = useLang()
+  const pathname = usePathname()
+  // Demo pages are standalone shop concepts; the portfolio's contact button would get in their way
+  if (pathname?.startsWith("/demo")) return null
 
   const message = lang === "id" ? WA_MESSAGE_ID : WA_MESSAGE_EN
   const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`

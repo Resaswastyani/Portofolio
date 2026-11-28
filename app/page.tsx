@@ -7,6 +7,7 @@ import { LiveAgentFeed, LiveAgentCounter } from "@/components/live-agent-feed"
 import { RevealText } from "@/components/reveal-text"
 import { MobileNav } from "@/components/mobile-nav"
 import { DevExSection } from "@/components/devex-section"
+import { DarkAmbient } from "@/components/dark-ambient"
 import { useLang } from "@/components/lang-provider"
 import { useInView } from "@/hooks/use-in-view"
 import {
@@ -15,6 +16,29 @@ import {
 } from "@/components/portfolio-ui"
 
 const HERO_VIDEO = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
+
+const PUBLICATIONS = [
+  {
+    title: "Perbandingan Algoritma Klasifikasi K-NN dengan Variasi Jarak, Naive Bayes, Logistic Regression, dan Decision Tree untuk Prediksi Kelulusan Mahasiswa",
+    authors: ["Resa Swastyani", "Herdiesel Santoso"],
+    journal: "JATI — Jurnal Mahasiswa Teknik Informatika",
+    year: "2025",
+    meta: "Vol. 9 No. 4, hlm. 7057–7064",
+    doi: "10.36040/jati.v9i4.14255",
+    url: "https://ejournal.itn.ac.id/index.php/jati/article/view/14255",
+    pdf: "https://ejournal.itn.ac.id/jati/article/download/14255/7965",
+  },
+  {
+    title: "Sistem Pendukung Keputusan Kelompok Pemilihan Pegawai Terbaik dengan Metode AHP, Oreste dan Borda",
+    authors: ["Herdiesel Santoso", "Wahyu Widodo", "Resa Swastyani"],
+    journal: "Jurnal FASILKOM",
+    year: "2024",
+    meta: "Vol. 14 No. 3, hlm. 681–687",
+    doi: "10.37859/jf.v14i3.8095",
+    url: "https://ejurnal.umri.ac.id/index.php/JIK/article/view/8095",
+    pdf: "https://ejurnal.umri.ac.id/index.php/JIK/article/download/8095/3315",
+  },
+]
 
 // ─── Hero background video — paused while scrolled away ──────────────────────
 function HeroVideo({ ready }: { ready: boolean }) {
@@ -67,7 +91,8 @@ export default function PortfolioPage() {
   })
 
   return (
-    <div id="top" className="bg-[#F5F4F0] dark:bg-[#111110] text-[#111] dark:text-[#ececea] min-h-screen font-sans antialiased">
+    <div id="top" className="isolate bg-[#F5F4F0] dark:bg-[#111110] text-[#111] dark:text-[#ececea] min-h-screen font-sans antialiased">
+      <DarkAmbient />
 
       {/* ── INTRO ANIMATION ───────────────────────────────────────────────── */}
       <IntroAnimation onDone={handleIntroDone} />
@@ -356,6 +381,30 @@ export default function PortfolioPage() {
             </div>
           </div>
 
+          {/* ── Demo interaktif — konsep toko dengan animasi ── */}
+          <div className="mb-8">
+            <div className="text-[11px] text-black/25 dark:text-white/25 tracking-widest uppercase mb-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
+              <span>{t.demoLabel}</span>
+              <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <LiveWebsiteEmbed
+                prevLabel={t.galleryPrev}
+                nextLabel={t.galleryNext}
+                url="/demo/sangu"
+                images={["/images/demo-sangu1.webp", "/images/demo-sangu2.webp", "/images/demo-sangu3.webp"]}
+                displayUrl="/demo/sangu"
+                title="Sangu — Tumbler & Bekal"
+                desc="Konsep toko tumbler, kotak bekal, tas bekal, dan botol minum: pilih produk lewat dial putar, huruf raksasa dan bahan makanan melayang ikut berganti dengan animasi."
+                accentColor="#D9643A"
+                logoText="SANGU"
+                badge="LIVE DEMO"
+                delay={0}
+              />
+            </div>
+          </div>
+
           {/* ── Proyek Lainnya — media first ── */}
           <div className="text-[11px] text-black/25 dark:text-white/25 tracking-widest uppercase mb-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-black/[0.06] dark:bg-white/[0.06]" />
@@ -405,6 +454,30 @@ export default function PortfolioPage() {
               accentColor="#0e7490"
               logoText="ABSEN"
               delay={160}
+            />
+            <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              url="https://sonindografika.com/"
+              images={["/images/limaplastik1.webp", "/images/limaplastik2.webp", "/images/limaplastik3.webp"]}
+              displayUrl="sonindografika.com"
+              title="Lima Plastik — Company Profile"
+              desc="Website produsen kantong plastik HD & PP di Jabodetabek, dengan rak plastik interaktif yang bisa disentuh dan ditarik, katalog produk, dan alur pemesanan via WhatsApp."
+              accentColor="#7c5cff"
+              logoText="LIMA"
+              delay={0}
+            />
+            <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              url="https://queenswallets.vercel.app/login"
+              images={["/images/queenswallets1.webp", "/images/queenswallets2.webp", "/images/queenswallets3.webp"]}
+              displayUrl="queenswallets.vercel.app"
+              title="Mellow — Personal Life Planner"
+              desc="Aplikasi ruang pribadi untuk mengatur keuangan, ibadah, jadwal, pengingat, dan target impian (tabungan maupun pencapaian) dengan kartu bertema animasi."
+              accentColor="#db2777"
+              logoText="M"
+              delay={80}
             />
             <LiveWebsiteEmbed
               prevLabel={t.galleryPrev}
@@ -467,6 +540,60 @@ export default function PortfolioPage() {
               images={["/images/plt1-1.webp", "/images/plt1-2.webp"]}
               delay={160}
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          PUBLICATIONS
+          ══════════════════════════════════════════════════════════════════════ */}
+      <section id="publications" className="py-20 md:py-32 px-5 sm:px-6 md:px-12 lg:px-20 border-t border-black/[0.06] dark:border-white/[0.06]">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-8 mb-10 md:mb-16">
+            <div>
+              <PixelIcon type="workflow" size={40} />
+              <div className="mt-4"><Tag>{t.pubTag}</Tag></div>
+              <RevealText className="mt-5 text-[2rem] leading-[1.08] sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.05]">
+                {t.pubHeading}
+              </RevealText>
+            </div>
+            <p className="text-sm text-black/45 dark:text-white/45 leading-relaxed max-w-xs">{t.pubDesc}</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            {PUBLICATIONS.map((pub, i) => (
+              <BentoCard key={pub.doi} className="p-6 sm:p-8 flex flex-col" delay={i * 80}>
+                <div className="flex items-center justify-between gap-3 mb-5">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] tracking-widest uppercase text-black/45 dark:text-white/45 bg-black/[0.04] dark:bg-white/[0.06]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                    {pub.journal}
+                  </span>
+                  <span className="font-pixel text-[11px] text-black/30 dark:text-white/30 tracking-widest shrink-0">{pub.year}</span>
+                </div>
+                <h3 className="text-base sm:text-lg font-light leading-snug mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{pub.title}</h3>
+                <p className="text-sm text-black/45 dark:text-white/45 mb-1">
+                  {pub.authors.map((a, j) => (
+                    <span key={a}>
+                      {j > 0 && ", "}
+                      <span className={a === "Resa Swastyani" ? "text-black/80 dark:text-white/85 font-medium" : ""}>{a}</span>
+                    </span>
+                  ))}
+                </p>
+                <p className="text-xs text-black/35 dark:text-white/35 mb-6">{pub.meta} · DOI {pub.doi}</p>
+                <div className="mt-auto flex flex-wrap gap-2">
+                  <a href={pub.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium bg-[#111] dark:bg-[#ececea] text-white dark:text-[#111] hover:-translate-y-0.5 transition-transform">
+                    {t.pubRead}
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                  </a>
+                  <a href={pub.pdf} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium text-black/60 dark:text-white/60 border border-black/10 dark:border-white/15 hover:text-black dark:hover:text-white hover:border-black/25 dark:hover:border-white/30 transition-colors">
+                    PDF
+                  </a>
+                  <a href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium text-black/60 dark:text-white/60 border border-black/10 dark:border-white/15 hover:text-black dark:hover:text-white hover:border-black/25 dark:hover:border-white/30 transition-colors">
+                    DOI
+                  </a>
+                </div>
+              </BentoCard>
+            ))}
           </div>
         </div>
       </section>

@@ -628,10 +628,10 @@ export function LocalVideoEmbed({ src, poster, title, desc, delay = 0, isLive = 
 
 // ─── Live website card — iframe/images mounted only when scrolled near ───────
 export function LiveWebsiteEmbed({
-  url, images, displayUrl, title, desc, accentColor = "#167E6C", logoText = "WEB", delay = 0, prevLabel = "Prev", nextLabel = "Next",
+  url, images, displayUrl, title, desc, accentColor = "#167E6C", logoText = "WEB", delay = 0, prevLabel = "Prev", nextLabel = "Next", badge = "LIVE WEBSITE",
 }: {
   url?: string; images?: string[]; displayUrl: string; title: string; desc: string
-  accentColor?: string; logoText?: string; delay?: number; prevLabel?: string; nextLabel?: string
+  accentColor?: string; logoText?: string; delay?: number; prevLabel?: string; nextLabel?: string; badge?: string
 }) {
   const near = useInView({ rootMargin: "300px 0px", threshold: 0 })
   const live = useInView({ once: false, rootMargin: "200px 0px", threshold: 0 })
@@ -707,7 +707,7 @@ export function LiveWebsiteEmbed({
             <div className="absolute top-2 right-2 z-10 pointer-events-none">
               <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-medium text-white tracking-wide" style={{ background: accentColor }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-white/70 shrink-0" />
-                LIVE WEBSITE
+                {badge}
               </div>
             </div>
           </div>
@@ -715,7 +715,7 @@ export function LiveWebsiteEmbed({
           <div className="px-5 py-4 border-t border-black/[0.05] dark:border-white/[0.05] flex-1">
             <div className="flex items-center gap-2">
               <h3 className="text-sm sm:text-base font-light text-black/80 dark:text-white/80">{title}</h3>
-              <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${accentColor}18`, color: accentColor }}>Live</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${accentColor}18`, color: accentColor }}>{badge === "LIVE DEMO" ? "Demo" : "Live"}</span>
             </div>
             <p className="text-xs sm:text-[13px] text-black/45 dark:text-white/45 mt-1 leading-relaxed">{desc}</p>
           </div>
