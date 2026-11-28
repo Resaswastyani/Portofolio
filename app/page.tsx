@@ -402,6 +402,32 @@ export default function PortfolioPage() {
                 badge="LIVE DEMO"
                 delay={0}
               />
+              <LiveWebsiteEmbed
+                prevLabel={t.galleryPrev}
+                nextLabel={t.galleryNext}
+                url="/demo/lembar"
+                images={["/images/demo-lembar1.webp", "/images/demo-lembar2.webp", "/images/demo-lembar3.webp"]}
+                displayUrl="/demo/lembar"
+                title="Lembar — Toko Buku"
+                desc="Konsep toko buku dengan rak interaktif: tarik buku dari rak, sampul terbuka 3D, warna latar mengikuti sampul, plus daftar bab dan pembaca sampel."
+                accentColor="#3B5BA9"
+                logoText="LEMBAR"
+                badge="LIVE DEMO"
+                delay={80}
+              />
+              <LiveWebsiteEmbed
+                prevLabel={t.galleryPrev}
+                nextLabel={t.galleryNext}
+                url="/demo/seduh"
+                images={["/images/demo-seduh1.webp", "/images/demo-seduh2.webp", "/images/demo-seduh3.webp"]}
+                displayUrl="/demo/seduh"
+                title="Seduh — Kopi Drip Bag Nusantara"
+                desc="Konsep toko kopi drip bag dari 12 daerah: sachet berserakan dan melayang, klik untuk mendekat, balik untuk melihat profil rasa dan cara seduh."
+                accentColor="#B5651D"
+                logoText="SEDUH"
+                badge="LIVE DEMO"
+                delay={160}
+              />
             </div>
           </div>
 
