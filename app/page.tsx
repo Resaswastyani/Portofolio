@@ -368,10 +368,10 @@ export default function PortfolioPage() {
               prevLabel={t.galleryPrev}
               nextLabel={t.galleryNext}
               url="https://simpap-xi.vercel.app/"
-              images={["/images/simpap1.webp", "/images/simpap2.webp"]}
+              images={["/images/simpap-dashboard.webp", "/images/simpap1.webp", "/images/simpap2.webp"]}
               displayUrl="simpap-xi.vercel.app"
               title="PAP Management System"
-              desc="Sistem manajemen internal PT Pandawa Amerta Packindo, produsen kemasan plastik fleksibel, dengan login aman berproteksi reCAPTCHA."
+              desc="Sistem manajemen internal PT Pandawa Amerta Packindo, produsen kemasan plastik fleksibel, terintegrasi dengan Accurate, PAP AI Analisis, Altius, dan Fingerspot, dengan login aman berproteksi reCAPTCHA."
               accentColor="#0284c7"
               logoText="PAP"
               delay={0}
@@ -406,30 +406,43 @@ export default function PortfolioPage() {
               logoText="ABSEN"
               delay={160}
             />
-            <ProjectCard
+            <LiveWebsiteEmbed
               prevLabel={t.galleryPrev}
               nextLabel={t.galleryNext}
-              title="AI Training Materials"
-              category="AI · Education"
-              tech="AI Tools, Workshop"
-              desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
-              link="#"
-              images={["/images/plt1-1.webp", "/images/plt1-2.webp"]}
-              delay={240}
+              url="https://resa-supost-marketplace.vercel.app/"
+              images={["/images/marketplace1.webp", "/images/marketplace2.webp", "/images/marketplace3.webp"]}
+              displayUrl="resa-supost-marketplace.vercel.app"
+              title="Marketplace App"
+              desc="Marketplace jual-beli dengan 18 kategori, pencarian, pembuatan listing, pesan ke penjual, dan pembayaran Buy Now lewat Stripe Checkout."
+              accentColor="#2563eb"
+              logoText="SHOP"
+              delay={0}
+            />
+            <LiveWebsiteEmbed
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              url="https://resa-test-su-post.vercel.app/"
+              images={["/images/tictactoe1.webp", "/images/tictactoe2.webp", "/images/tictactoe3.webp"]}
+              displayUrl="resa-test-su-post.vercel.app"
+              title="Tic-Tac-Toe Game"
+              desc="Game tic-tac-toe dua pemain dalam satu layar dengan 5 tema (Classic, Space, Pets, Snacks, Fire & Ice) dan skor yang tersimpan di perangkat. Dibangun dengan Next.js."
+              accentColor="#65a30d"
+              logoText="XO"
+              delay={80}
             />
             <LocalVideoEmbed
               src="/video/egg.mp4"
-                poster="/video/posters/egg.webp"
+              poster="/video/posters/egg.webp"
               title="Smart Egg Incubator"
               desc="Inkubator telur otomatis berbasis IoT untuk pemantauan suhu dan kelembaban real-time. Proyek kampus 2024."
-              delay={320}
+              delay={160}
             />
             <LocalVideoEmbed
               src="/video/Maharani.mp4"
-                poster="/video/posters/Maharani.webp"
+              poster="/video/posters/Maharani.webp"
               title="Maharani Transport App"
               desc="Demonstrasi platform penyewaan mobil Maharani Transport dengan sistem pemesanan via WhatsApp."
-              delay={400}
+              delay={0}
             />
             <LiveWebsiteEmbed
               prevLabel={t.galleryPrev}
@@ -440,7 +453,19 @@ export default function PortfolioPage() {
               desc="Prediksi kelulusan mahasiswa menggunakan KNN, Decision Tree & Naïve Bayes dengan visualisasi Streamlit."
               accentColor="#ff4b4b"
               logoText="PRED"
-              delay={480}
+              delay={80}
+            />
+            {/* Foto pelatihan ditaruh paling akhir */}
+            <ProjectCard
+              prevLabel={t.galleryPrev}
+              nextLabel={t.galleryNext}
+              title="AI Training Materials"
+              category="AI · Education"
+              tech="AI Tools, Workshop"
+              desc="Materi pelatihan AI untuk guru-guru MGMP Bahasa Inggris Kabupaten Sleman. Dirancang dan dipresentasikan oleh Resa."
+              link="#"
+              images={["/images/plt1-1.webp", "/images/plt1-2.webp"]}
+              delay={160}
             />
           </div>
         </div>

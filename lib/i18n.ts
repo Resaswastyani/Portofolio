@@ -18,9 +18,12 @@ export const translations = {
     scrollHint: "Scroll",
     galleryPrev: "Sebelumnya",
     galleryNext: "Berikutnya",
+    previewLabel: "Lihat preview",
+    visitSite: "Kunjungi website",
+    closeLabel: "Tutup",
     heroStats: [
       { value: "~0%", label: "Tingkat Error" },
-      { value: "6+", label: "Proyek Selesai" },
+      { value: "10+", label: "Proyek Selesai" },
       { value: "3+", label: "Tahun Berpengalaman" },
     ],
     aboutTag: "TENTANG SAYA",
@@ -29,7 +32,7 @@ export const translations = {
     aboutLocation: "Boyolali, Indonesia",
     aboutAvailable: "Available for work",
     profileTitle: "Profil Profesional",
-    profileDesc: "Saya seorang profesional web developer & software engineer. Saya percaya bahwa kualitas adalah kunci utama dalam menghasilkan produk teknologi yang memuaskan pengguna. Saya memiliki pengalaman dalam merancang dan mengimplementasikan pengembangan di proyek kampus dan luar kampus yang setiap fitur yang dirilis memiliki kinerja dan keandalan yang optimal dengan tingkat eror hampir 0%.",
+    profileDesc: "Web developer dan software engineer yang berpengalaman membangun aplikasi web untuk edukasi keuangan, marketplace, layanan properti, dan bisnis rental mobil. Menguasai Laravel, Next.js, PHP, dan Python, dengan pengalaman tambahan di proyek machine learning dan IoT. Memadukan pengembangan langsung dengan kepemimpinan tim, serta berfokus pada kualitas, keandalan perangkat lunak, dan kebutuhan pengguna.",
     contactInfo: [
       { label: "Email", value: "resaarrazy@gmail.com" },
       { label: "Telepon", value: "+62 8570 2212 770" },
@@ -52,10 +55,10 @@ export const translations = {
     expHeading: "Rekam jejak profesional\ndi berbagai industri.",
     experience: [
       {
-        no: "01", role: "Fullstack Developer", company: "PT Akademi Keuangan Nusantara",
+        no: "01", role: "Fullstack Developer", company: "PT Pandawa Amerta Packindo",
         period: "Desember 2025 – Sekarang", type: "Full-time",
-        desc: "Sebagai Fullstack Developer, saya bertanggung jawab mengembangkan aplikasi pembelajaran atau e-learning mengenai keuangan. Saya menggunakan Next.js sebagai bahasa pemrograman utama untuk membangun antarmuka dan logika backend yang efisien.",
-        stack: ["Next.js", "React", "Node.js"],
+        desc: "Membangun sistem manajemen internal (SIMPAP) dan sistem absensi karyawan untuk PT Pandawa Amerta Packindo, produsen kemasan plastik fleksibel. SIMPAP terintegrasi dengan Accurate, PAP AI Analisis, Altius, dan Fingerspot, sedangkan sistem absensi memakai verifikasi kamera dan lokasi Google Maps.",
+        stack: ["Next.js", "Accurate", "Fingerspot", "Google Maps"],
       },
       {
         no: "02", role: "Leader Programmer", company: "CV Seven Smart Indonesia",
@@ -143,9 +146,12 @@ export const translations = {
     scrollHint: "Scroll",
     galleryPrev: "Previous",
     galleryNext: "Next",
+    previewLabel: "View preview",
+    visitSite: "Visit website",
+    closeLabel: "Close",
     heroStats: [
       { value: "~0%", label: "Error Rate" },
-      { value: "6+", label: "Projects Done" },
+      { value: "10+", label: "Projects Done" },
       { value: "3+", label: "Years Experience" },
     ],
     aboutTag: "ABOUT ME",
@@ -154,7 +160,7 @@ export const translations = {
     aboutLocation: "Boyolali, Indonesia",
     aboutAvailable: "Available for work",
     profileTitle: "Professional Profile",
-    profileDesc: "I am a professional web developer & software engineer. I believe quality is the primary key to delivering satisfying technology products. I have experience designing and implementing development in both campus and external projects, ensuring every released feature achieves optimal performance and reliability with an error rate of nearly 0%.",
+    profileDesc: "Web developer and software engineer with experience building web applications for financial education, marketplaces, property services, and car rental businesses. Skilled in Laravel, Next.js, PHP, and Python, with additional experience in machine learning and IoT projects. Combines hands-on development with team leadership and a focus on software quality, reliability, and user needs.",
     contactInfo: [
       { label: "Email", value: "resaarrazy@gmail.com" },
       { label: "Phone", value: "+62 8570 2212 770" },
@@ -177,10 +183,10 @@ export const translations = {
     expHeading: "Professional track record\nacross various industries.",
     experience: [
       {
-        no: "01", role: "Fullstack Developer", company: "PT Akademi Keuangan Nusantara",
+        no: "01", role: "Fullstack Developer", company: "PT Pandawa Amerta Packindo",
         period: "December 2025 – Present", type: "Full-time",
-        desc: "As a Fullstack Developer, I am responsible for developing a financial e-learning application. I use Next.js as the primary programming language to build efficient interfaces and backend logic.",
-        stack: ["Next.js", "React", "Node.js"],
+        desc: "Built the internal management system (SIMPAP) and the employee attendance system for PT Pandawa Amerta Packindo, a flexible plastic packaging manufacturer. SIMPAP integrates with Accurate, PAP AI Analysis, Altius, and Fingerspot, while the attendance system uses camera verification and Google Maps location.",
+        stack: ["Next.js", "Accurate", "Fingerspot", "Google Maps"],
       },
       {
         no: "02", role: "Leader Programmer", company: "CV Seven Smart Indonesia",

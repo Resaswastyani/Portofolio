@@ -1,8 +1,10 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion"
 import { useInView } from "@/hooks/use-in-view"
+import { useLang } from "@/components/lang-provider"
 
 // ─── Device capability ───────────────────────────────────────────────────────
 // Tilt effects only make sense with a real pointer; on touch devices they just cost frames.
@@ -273,7 +275,7 @@ function Reveal({ children, delay = 0, className = "" }: { children: React.React
   )
 }
 
-function BrowserBar({ label, href, accent }: { label: string; href?: string; accent?: string }) {
+function BrowserBar({ label, href, accent, onPreview, previewLabel }: { label: string; href?: string; accent?: string; onPreview?: () => void; previewLabel?: string }) {
   return (
     <div className="flex items-center gap-3 px-4 py-2.5 border-b border-black/[0.05] dark:border-white/[0.05] bg-[#fafaf8] dark:bg-[#222220] shrink-0">
       <div className="flex gap-1.5 shrink-0">
@@ -281,13 +283,26 @@ function BrowserBar({ label, href, accent }: { label: string; href?: string; acc
         <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
         <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
       </div>
+      {onPreview ? (
+        // Screenshot-based cards: the address bar becomes a "View preview" button that opens the lightbox
+        <button
+          type="button"
+          onClick={onPreview}
+          aria-label={`${previewLabel} — ${label}`}
+          className="flex-1 h-7 rounded-full flex items-center justify-center gap-1.5 px-3 min-w-0 bg-black/[0.05] dark:bg-white/[0.06] hover:bg-black/[0.09] dark:hover:bg-white/[0.11] transition-colors"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={accent ?? "currentColor"} strokeWidth="2" className="shrink-0"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+          <span className="text-[11px] font-medium tracking-wide truncate" style={{ color: accent }}>{previewLabel}</span>
+        </button>
+      ) : (
       <div className="flex-1 h-5 bg-black/[0.05] dark:bg-white/[0.05] rounded-full flex items-center px-3 gap-1.5 min-w-0">
         {accent && (
           <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
         )}
         <span className="text-[10px] text-black/35 dark:text-white/35 tracking-wide truncate">{label}</span>
       </div>
-      {href && (
+      )}
+      {href && !onPreview && (
         <a
           href={href}
           target="_blank"
@@ -305,8 +320,104 @@ function BrowserBar({ label, href, accent }: { label: string; href?: string; acc
 
 const CARD_SHELL = "relative rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1c1c1a] overflow-hidden h-full flex flex-col transition-[box-shadow,border-color] duration-500 hover:shadow-[0_30px_60px_-25px_rgba(0,0,0,0.3)] hover:border-black/[0.14] dark:hover:border-white/[0.16]"
 
+// ─── Full-screen screenshot preview ──────────────────────────────────────────
+// Rendered into <body> so the card's 3D transform can't trap the fixed overlay.
+function PreviewLightbox({ images, title, url, start = 0, onClose }: { images: string[]; title: string; url?: string; start?: number; onClose: () => void }) {
+  const { t } = useLang()
+  const [idx, setIdx] = useState(start)
+  const n = images.length
+  const go = (d: number) => setIdx(i => (i + d + n) % n)
+  const closeRef = useRef(onClose)
+  closeRef.current = onClose
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeRef.current()
+      else if (e.key === "ArrowRight") setIdx(i => (i + 1) % n)
+      else if (e.key === "ArrowLeft") setIdx(i => (i - 1 + n) % n)
+    }
+    window.addEventListener("keydown", onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prevOverflow }
+  }, [n])
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      onClick={onClose}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-8 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200"
+    >
+      <div className="w-full max-w-5xl flex flex-col gap-3" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between gap-3 text-white">
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base font-light truncate">{title}</h3>
+            {n > 1 && <p className="text-[11px] text-white/50 tabular-nums">{idx + 1} / {n}</p>}
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {url && (
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-[11px] text-white/80 hover:text-white bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                {t.visitSite}
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t.closeLabel}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="relative rounded-xl overflow-hidden bg-black/40 aspect-[16/10]">
+          <img key={images[idx]} src={images[idx]} alt={`${title} — ${idx + 1}/${n}`} className="absolute inset-0 w-full h-full object-contain animate-in fade-in duration-300" />
+          {n > 1 && (
+            <>
+              <button type="button" onClick={() => go(-1)} aria-label={t.galleryPrev}
+                className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/55 hover:bg-black/75 text-white flex items-center justify-center transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="15 18 9 12 15 6" /></svg>
+              </button>
+              <button type="button" onClick={() => go(1)} aria-label={t.galleryNext}
+                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/55 hover:bg-black/75 text-white flex items-center justify-center transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6" /></svg>
+              </button>
+            </>
+          )}
+        </div>
+
+        {n > 1 && (
+          <div className="flex justify-center gap-2 overflow-x-auto no-scrollbar">
+            {images.map((img, i) => (
+              <button
+                key={img}
+                type="button"
+                onClick={() => setIdx(i)}
+                aria-label={`${i + 1}`}
+                className={`shrink-0 w-16 sm:w-24 aspect-[16/10] rounded-md overflow-hidden border-2 transition-[opacity,border-color] ${i === idx ? "border-white opacity-100" : "border-transparent opacity-50 hover:opacity-80"}`}
+              >
+                <img src={img} alt="" loading="lazy" className="w-full h-full object-cover object-top" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 // ─── Image gallery with arrows, dots & swipe (native scroll-snap) ─────────────
-function Gallery({ images, title, prevLabel, nextLabel }: { images: string[]; title: string; prevLabel: string; nextLabel: string }) {
+function Gallery({ images, title, prevLabel, nextLabel, onOpen }: { images: string[]; title: string; prevLabel: string; nextLabel: string; onOpen?: (index: number) => void }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [idx, setIdx] = useState(0)
   const scrollRaf = useRef(0)
@@ -340,7 +451,8 @@ function Gallery({ images, title, prevLabel, nextLabel }: { images: string[]; ti
             loading="lazy"
             decoding="async"
             draggable={false}
-            className="w-full h-full shrink-0 object-cover object-top snap-center"
+            onClick={onOpen ? () => onOpen(i) : undefined}
+            className={`w-full h-full shrink-0 object-cover object-top snap-center ${onOpen ? "cursor-zoom-in" : ""}`}
           />
         ))}
       </div>
@@ -388,14 +500,18 @@ export function ProjectCard({
   image?: string; images?: string[]; delay?: number; prevLabel?: string; nextLabel?: string
 }) {
   const gallery = images ?? (image ? [image] : [])
+  const [preview, setPreview] = useState<number | null>(null)
   return (
     <Reveal delay={delay}>
       <Tilt3D>
         <article className={CARD_SHELL}>
           {gallery.length > 0 && (
             <div className="relative overflow-hidden h-[200px] sm:h-[220px] bg-black/[0.03] dark:bg-white/[0.03]">
-              <Gallery images={gallery} title={title} prevLabel={prevLabel} nextLabel={nextLabel} />
+              <Gallery images={gallery} title={title} prevLabel={prevLabel} nextLabel={nextLabel} onOpen={setPreview} />
             </div>
+          )}
+          {preview !== null && (
+            <PreviewLightbox images={gallery} title={title} start={preview} onClose={() => setPreview(null)} />
           )}
           <div className="p-5 sm:p-6 flex flex-col flex-1">
             <div className="flex justify-between items-start mb-3">
@@ -526,16 +642,27 @@ export function LiveWebsiteEmbed({
   // after the visitor asks for it, and is torn down again once scrolled away.
   const showIframe = !!url && !hasImages && wantLive && live.inView
   useEffect(() => { if (!showIframe) setLoaded(false) }, [showIframe])
+  const { t } = useLang()
+  const [preview, setPreview] = useState<number | null>(null)
 
   return (
     <Reveal delay={delay}>
       <Tilt3D max={5}>
         <article ref={near.ref} className={CARD_SHELL}>
-          <BrowserBar label={displayUrl} href={url || images?.[0]} accent={accentColor} />
+          <BrowserBar
+            label={displayUrl}
+            href={url || images?.[0]}
+            accent={accentColor}
+            onPreview={hasImages ? () => setPreview(0) : undefined}
+            previewLabel={t.previewLabel}
+          />
+          {hasImages && preview !== null && (
+            <PreviewLightbox images={images!} title={title} url={url} start={preview} onClose={() => setPreview(null)} />
+          )}
 
           <div className="relative aspect-[16/10] overflow-hidden bg-white dark:bg-[#161614]">
             {hasImages ? (
-              near.inView && <Gallery images={images!} title={title} prevLabel={prevLabel} nextLabel={nextLabel} />
+              near.inView && <Gallery images={images!} title={title} prevLabel={prevLabel} nextLabel={nextLabel} onOpen={setPreview} />
             ) : (
               <div ref={live.ref} className="absolute inset-0">
                 {/* Branded placeholder */}
